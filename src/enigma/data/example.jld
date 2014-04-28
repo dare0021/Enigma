@@ -1,0 +1,16 @@
+{   //start of document 
+    /*comments are dropped and not parsed */
+    "key1" : "single item value", 
+    /*blank spaces are ignored unless present in double quotes 
+     *block quotes are also possible*/
+    "key2" : ["value1", "value2"], 
+    "key3" : [["value1[{,", "value1,}]"], "value2"],   //nested lists 
+    "key4" : {    //nested document 
+                         "key5" : "value1", 
+                         "key5a": "value2"
+                    },
+    "key6" : ["value1", {
+ 							"key7" : "value2",
+ 							"key8" : "value3"
+    	                 }]
+}   //end of document
