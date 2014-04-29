@@ -15,8 +15,8 @@ import jld.JldSetter;
 import sound.BigClip;
 import sound.SClip;
 
-public class ShipBattleLogic extends GUILogic implements KeyListener{
-	public ShipBattleLogic(ShipBattleGUI shipbattlegui){
+public class ExampleLogic extends GUILogic implements KeyListener{
+	public ExampleLogic(ExampleGUI shipbattlegui){
 		gui = shipbattlegui;
 		gui.linkLogic(this);
 		gui.addKeyListener(this);
@@ -76,10 +76,10 @@ public class ShipBattleLogic extends GUILogic implements KeyListener{
 			return;
 		switch (actionCommand){
 		case "GridTest Action":
-			jitter("testgrid", 20, 5, 20, 0, 20);
+			//jitter("testgrid", 20, 5, 20, 0, 20);
+			moveRelative("testgrid", 100, 0, 1000);
 			break;
 		case "GridTest Action Fade":
-			//moveRelative("testgrid", 100, 0, 1000);
 			swit = !swit;
 			if(swit)
 				fading("testgrid", -1, 1000);

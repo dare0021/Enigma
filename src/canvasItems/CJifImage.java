@@ -19,6 +19,9 @@ public class CJifImage extends CStaticImage implements ActionListener{
 	private int framesTotal, frameStart, frameCurrent, frameEnd;
 	private Timer timer;
 	private String addressroot;
+	private boolean deleteWhenDone, isDone;
+	
+	private boolean deleting; //Not a publically available member
 	
 	public CJifImage(CImageDef def, double fps, int n){
 		super(def, 0);
@@ -45,6 +48,9 @@ public class CJifImage extends CStaticImage implements ActionListener{
 		frameStart = start;
 		frameCurrent = current;
 		frameEnd = end;
+		deleteWhenDone = false;
+		deleting = false;
+		isDone = false;
 		timer = new Timer((int)(1000/fps), this);
 	}private void printError(String what, String autocorrect){
 		new Exception().printStackTrace();
@@ -57,6 +63,8 @@ public class CJifImage extends CStaticImage implements ActionListener{
 	public int getStartFrame(){return frameStart;}
 	public int getCurrentFrame(){return frameCurrent;}
 	public int getEndFrame(){return frameEnd;}
+	public boolean getDeleteWhenDone(){return deleteWhenDone;}
+	public boolean isDone(){return isDone;}
 	
 	public void setFPS(double fps){
 		framesPerSecond = fps;
@@ -94,6 +102,9 @@ public class CJifImage extends CStaticImage implements ActionListener{
 		}
 		frameEnd = end;
 	}
+	public void setDeleteWhenDone(boolean b){
+		deleteWhenDone = b;
+	}
 	@Override
 	/**
 	 * Provided so behavior is as expected when used on an animated image
@@ -115,7 +126,19 @@ public class CJifImage extends CStaticImage implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		super.setAddress(addressroot + frameCurrent + ".png");
 		frameCurrent++;
-		if(frameCurrent > frameEnd)
-			frameCurrent = frameStart;
+		if(frameCurrent > frameEnd){
+			if(deleteWhenDone){
+				if(deleting){
+					isDone = true;
+					stop();
+					setOpacity(0);
+				}else{
+					frameCurrent--;
+					deleting = true;
+				}
+			}else{
+				frameCurrent = frameStart;
+			}
+		}
 	}
 }

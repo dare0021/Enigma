@@ -2,10 +2,10 @@ package enigma;
 
 public class EnigmaLogic {
 	EnigmaGUI formgui;
-	ShipBattleLogic displogic;
+	ExampleLogic displogic;
 	
 	public EnigmaLogic(EnigmaGUI enigmagui){
 		formgui = enigmagui;
-		displogic = new ShipBattleLogic(formgui.gui);
+		displogic = new ExampleLogic(formgui.gui);
 	}
 }

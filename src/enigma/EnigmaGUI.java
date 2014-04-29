@@ -6,12 +6,12 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 
 public class EnigmaGUI extends JFrame implements IConstantsUI, IStringsEnigma {
-	ShipBattleGUI gui;
+	ExampleGUI gui;
 	
 	public EnigmaGUI(){
 		this.setTitle(TITLE);
 		
-		gui = new ShipBattleGUI();
+		gui = new ExampleGUI();
 		this.add(gui, BorderLayout.CENTER);
 		
 		this.setResizable(false);

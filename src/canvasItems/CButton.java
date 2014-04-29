@@ -5,6 +5,9 @@ package canvasItems;
  * It is for coordinate calculation only
  * 
  * The hover image will have the same properties of the bg image
+ * 
+ * This class is not scalable
+ * 		why would you scale a UI fixture
  */
 
 public class CButton {

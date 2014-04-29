@@ -23,13 +23,15 @@ import javax.swing.JPanel;
 import canvasItems.*;
 
 class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotionListener, MouseListener {
+	private Object graphicsQuality = RenderingHints.VALUE_INTERPOLATION_BICUBIC;
+	
 	HashMap<String, Vector<ICShape>> shapes; //Each vector should be a single element for easy update/removal
 	HashMap<String, Vector<CText>> texts; //Should have the same name as the JLine counterpart for the same reason
 	HashMap<String, Vector<CButton>> buttons; //data list
 	HashMap<String, CStaticImage> buttonimgs; //display list
 	HashMap<String, Vector<CStaticImage>> staticimgs;
 	HashMap<String, Vector<CJifImage>> jifimgs;
-	ShipBattleLogic logic;
+	ExampleLogic logic;
 	
 	public GUIcanvas(){
 		this.setPreferredSize(new Dimension(APPWIDTH, APPHEIGHT));
@@ -42,7 +44,7 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 		jifimgs = new HashMap<String, Vector<CJifImage>>();
 		this.addMouseMotionListener(this);
 		this.addMouseListener(this);
-	}public void linkLogic(ShipBattleLogic parent){
+	}public void linkLogic(ExampleLogic parent){
 		logic = parent;
 	}
 
@@ -112,6 +114,10 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 		jifimg.add(new CJifImage(cf.createImageDef(), 1, 5));
 		cf.x += 50;
 		jifimg.add(new CJifImage(cf.createImageDef(), 5, 5, 1, 2, 3));
+		cf.x += 50;
+		CJifImage runonce =new CJifImage(cf.createImageDef(), 1, 5);
+		runonce.setDeleteWhenDone(true);
+		jifimg.add(runonce);
 		for(CJifImage img : jifimg)
 			img.start();
 		
@@ -324,16 +330,21 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 			}
 		}
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_DEFAULT);
+		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, graphicsQuality);
 		for(String key : staticimgs.keySet()){
 			for(CStaticImage img : staticimgs.get(key)){
 				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, img.getOpacity()));
-				g2d.drawImage(img.image, (int)img.x, (int)img.y, null);
+				g2d.drawImage(img.image, (int)img.x, (int)img.y, (int)(img.getEffectiveX1()), (int)(img.getEffectiveY1()), 0, 0, (int)img.width, (int)img.height, null);
 			}
 		}
 		for(String key : jifimgs.keySet()){
 			for(CJifImage img : jifimgs.get(key)){
-				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, img.getOpacity()));
-				g2d.drawImage(img.image, (int)img.x, (int)img.y, null);
+				if(img.isDone())
+					jifimgs.remove(img);
+				else{
+					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, img.getOpacity()));
+					g2d.drawImage(img.image, (int)img.x, (int)img.y, (int)(img.getEffectiveX1()), (int)(img.getEffectiveY1()), 0, 0, (int)img.width, (int)img.height, null);
+				}
 			}
 		}
 		for(String key : buttonimgs.keySet()){
