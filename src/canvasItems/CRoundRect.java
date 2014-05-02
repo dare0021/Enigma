@@ -5,11 +5,13 @@ import java.awt.Shape;
 import java.awt.geom.RoundRectangle2D;
 
 public class CRoundRect extends ACShape {
-	double x0, x1, y0, y1, thickness, arcwidth, archeight;
+	double arcwidth, archeight;
 	
-	public CRoundRect(double xFrom, double yFrom, double width, double height, double rounding){
+	public CRoundRect(double xFrom, double yFrom, double width, double height, double rounding, String name){
+		super(name);
 		init(xFrom, yFrom, width, height, Color.WHITE, new Color(0,0,0,0), 1, rounding, rounding);
-	}public CRoundRect(CRoundRect orig){
+	}public CRoundRect(CRoundRect orig, String name){
+		super(name);
 		init(orig.x0, orig.y0, orig.x1-orig.x0, orig.y1-orig.y0, orig.stroke, orig.fill, orig.thickness, orig.arcwidth, orig.archeight);
 	}
 	
@@ -29,7 +31,7 @@ public class CRoundRect extends ACShape {
 	public Shape getShape(){
 		if(getHeight()<0 || getWidth()<0){
 			System.out.println("WARN: height|width < 0");
-			new Exception().printStackTrace();
+			//new Exception().printStackTrace();
 		}
 		return new RoundRectangle2D.Double(getX(), getY(), getWidth(), getHeight(), getArcWidth(), getArcHeight());
 	}

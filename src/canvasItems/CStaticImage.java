@@ -17,27 +17,28 @@ import java.net.URISyntaxException;
 
 import javax.imageio.ImageIO;
 
-public class CStaticImage{
-	public double x, y, width, height, xScale, yScale;
-	private float opacity;
+public class CStaticImage extends ACItem{
+	public double width, height, xScale, yScale;
 	public Image image;
 	private String address;
 	
-	public CStaticImage(CImageDef def){
-		x = def.x;
-		y = def.y;
+	public CStaticImage(CImageDef def, String name){
+		super(name);
+		x0 = def.x;
+		y0 = def.y;
 		width = def.width;
 		height = def.height;
-		opacity = def.opacity;
+		opacity = (float) def.opacity;
 		xScale = 1;
 		yScale = 1;
 		setFile(def.address);
-	}protected CStaticImage(CImageDef def, int currentFrame){
-		x = def.x;
-		y = def.y;
+	}protected CStaticImage(CImageDef def, int currentFrame, String name){
+		super(name);
+		x0 = def.x;
+		y0 = def.y;
 		width = def.width;
 		height = def.height;
-		opacity = def.opacity;
+		opacity = (float) def.opacity;
 		xScale = 1;
 		yScale = 1;
 		setFile(def.address + currentFrame + ".png");
@@ -73,10 +74,9 @@ public class CStaticImage{
 		}
 	}
 	
-	public double getEffectiveX1(){return x + width*xScale;}
-	public double getEffectiveY1(){return y + height*yScale;}
+	public double getEffectiveX1(){return x0 + width*xScale;}
+	public double getEffectiveY1(){return y0 + height*yScale;}
 	public String getAddress(){return address;}
-	public float getOpacity(){return opacity;}
 	public double getXscale(){return xScale;}
 	public double getYscale(){return yScale;}
 	
@@ -85,13 +85,6 @@ public class CStaticImage{
 	 * The old image is removed automatically
 	 */
 	public void setAddress(String url){setFile(url);}
-	public void setOpacity(double o) {
-		if(o<0)
-			o = 0;
-		else if(o>1)
-			o = 1;
-		opacity = (float)o;
-	}
 	public void setXscale(double xs){xScale = xs;}
 	public void setYscale(double ys){yScale = ys;}
 }

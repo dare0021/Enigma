@@ -15,7 +15,6 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.JPanel;
@@ -23,25 +22,22 @@ import javax.swing.JPanel;
 import canvasItems.*;
 
 class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotionListener, MouseListener {
-	private Object graphicsQuality = RenderingHints.VALUE_INTERPOLATION_BICUBIC;
-	
-	HashMap<String, Vector<ICShape>> shapes; //Each vector should be a single element for easy update/removal
-	HashMap<String, Vector<CText>> texts; //Should have the same name as the JLine counterpart for the same reason
-	HashMap<String, Vector<CButton>> buttons; //data list
-	HashMap<String, CStaticImage> buttonimgs; //display list
-	HashMap<String, Vector<CStaticImage>> staticimgs;
-	HashMap<String, Vector<CJifImage>> jifimgs;
+	private final String dir = "GUI Test/"; 
+	Vector<ICShape> shapes; 
+	Vector<CText> texts; 
+	Vector<CButton> buttons;
+	Vector<CStaticImage> staticimgs;
+	Vector<CJifImage> jifimgs;
 	ExampleLogic logic;
 	
 	public GUIcanvas(){
 		this.setPreferredSize(new Dimension(APPWIDTH, APPHEIGHT));
 		this.setBackground(Color.BLACK);
-		shapes = new HashMap<String, Vector<ICShape>>();
-		texts = new HashMap<String, Vector<CText>>();
-		buttons = new HashMap<String, Vector<CButton>>();
-		buttonimgs = new HashMap<String, CStaticImage>();	//Modified via MouseMoved()
-		staticimgs = new HashMap<String, Vector<CStaticImage>>();
-		jifimgs = new HashMap<String, Vector<CJifImage>>();
+		shapes = new Vector<ICShape>();
+		texts = new Vector<CText>();
+		buttons = new Vector<CButton>();
+		staticimgs = new Vector<CStaticImage>();
+		jifimgs = new Vector<CJifImage>();
 		this.addMouseMotionListener(this);
 		this.addMouseListener(this);
 	}public void linkLogic(ExampleLogic parent){
@@ -63,69 +59,78 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 		cf.fillColor = Color.WHITE;
 		cf.font = new Font("Ariel", Font.PLAIN, 12);
 		for(int i=0; i<APPWIDTH; i+=50){
-			grid.add(new CLine(i, -1*APPHEIGHT, i, APPHEIGHT*2));
+			grid.add(new CLine(i, -1*APPHEIGHT, i, APPHEIGHT*2, "GridTestyLine"+i));
 			cf.msg = ""+i;
 			cf.x = i;
 			cf.y = 12;
-			gridlbl.add(new CText(cf.createTextDef()));
+			gridlbl.add(new CText(cf.createTextDef(), "GridTestyLabel"+i));
 		}
 		for(int i=0; i<APPHEIGHT; i+=50){
-			grid.add(new CLine(-1*APPWIDTH, i, APPWIDTH*2, i));
+			grid.add(new CLine(-1*APPWIDTH, i, APPWIDTH*2, i, "xAxisLine"+i));
 			cf.msg = ""+i;
 			cf.x = 0;
 			cf.y = i;
-			gridlbl.add(new CText(cf.createTextDef()));
+			gridlbl.add(new CText(cf.createTextDef(), "GridTestxLabel"+i));
 		}
 
 		cf.setSize(300, 100);
-		cf.url = "GridTestA.png";
+		cf.url = dir + "GridTestA.png";
 		cf.setLocation(100, 100);
 		cf.opacity = 0.5;
-		gridimg.add(new CStaticImage(cf.createImageDef()));
-		cf.url = "GridTestB.png";
+		gridimg.add(new CStaticImage(cf.createImageDef(), "GridTestA"));
+		cf.url = dir + "GridTestB.png";
 		cf.setLocation(200, 150);
 		cf.opacity = 1;
-		gridimg.add(new CStaticImage(cf.createImageDef()));
-		cf.url = "invalid path for testing purpose";
+		gridimg.add(new CStaticImage(cf.createImageDef(), "GridTestB"));
+		cf.url = dir + "invalid path for testing purpose";
 		cf.setLocation(100, 300);
-		gridimg.add(new CStaticImage(cf.createImageDef()));
+		gridimg.add(new CStaticImage(cf.createImageDef(), "GridTestError"));
 
 		cf.setLocation(500, 100);
 		cf.setSize(100, 50);
-		cf.url = "GridTestInactive.png";
-		btns.add(new CButton(cf.createImageDef(), "GridTestActive.png", "GridTest Button 1", "GridTest Action"));
+		cf.url = dir + "GridTestInactive.png";
+		cf.bgimage = new CStaticImage(cf.createImageDef(), "dummy");
+		cf.url = dir + "GridTestActive.png";
+		cf.hoverimage = new CStaticImage(cf.createImageDef(), "dummy");
+		cf.url = dir + "GridTestClick.png";
+		cf.clickimage = new CStaticImage(cf.createImageDef(), "dummy");
+		btns.add(new CButton(cf.createButtonDef(), "GridTestButton1", "GridTest Action"));
 		cf.x += 100;
-		btns.add(new CButton(cf.createImageDef(), "GridTestActive.png", "GridTest Button 2", "GridTest Action Fade"));
+		cf.url = dir + "AnimButton/";
+		cf.hoverimage = new CJifImage(cf.createImageDef(), 10, 8, "AnimButton");
+		((CJifImage) cf.hoverimage).start();
+		btns.add(new CButton(cf.createButtonDef(), "GridTestButton2", "GridTest Action Fade"));
 		
-		CRect rect = new CRect(520, 220, 100, 100);
+		CRect rect = new CRect(520, 220, 100, 100, "GridTestRect");
 		rect.setStroke(new Color(255, 255, 255, 100));
 		rect.setFill(new Color(255, 0, 0, 200));
 		rect.setThickness(10);
 		grid.add(rect);
-		grid.add(new CRoundRect(630, 220, 100, 100, 50));
-		grid.add(new CCircle(520, 330, 100, 50));
+		grid.add(new CRoundRect(630, 220, 100, 100, 50, "GridTestRRect"));
+		grid.add(new CCircle(520, 330, 100, 50, "GridTestCircle"));
 		
-		cf.url = "GridTestAnim/";
+		cf.url = dir + "GridTestAnim/";
 		cf.x = 250;
 		cf.y = 300;
 		cf.width = 50;
 		cf.height = 50;
 		cf.opacity = 1;
-		jifimg.add(new CJifImage(cf.createImageDef(), 1, 5));
+		jifimg.add(new CJifImage(cf.createImageDef(), 1, 5, "GridTestJIF1"));
 		cf.x += 50;
-		jifimg.add(new CJifImage(cf.createImageDef(), 5, 5, 1, 2, 3));
+		jifimg.add(new CJifImage(cf.createImageDef(), 5, 5, 1, 2, 3, "GridTestJIF2"));
 		cf.x += 50;
-		CJifImage runonce =new CJifImage(cf.createImageDef(), 1, 5);
+		CJifImage runonce =new CJifImage(cf.createImageDef(), 1, 5, "GridTestRO");
 		runonce.setDeleteWhenDone(true);
 		jifimg.add(runonce);
 		for(CJifImage img : jifimg)
 			img.start();
 		
-		addItem("testgrid", grid);
-		addItem("testgrid", gridlbl);
-		addItem("testgrid", gridimg);
-		addItem("testgrid", btns);
-		addItem("testgrid", jifimg);
+		assignGroup("testgrid", grid, gridlbl, gridimg, btns, jifimg);
+		addItem(grid);
+		addItem(gridlbl);
+		addItem(gridimg);
+		addItem(btns);
+		addItem(jifimg);
 	}
 	
 	/**
@@ -135,7 +140,6 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 		shapes.clear();
 		texts.clear();
 		buttons.clear();
-		buttonimgs.clear();
 		staticimgs.clear();
 		jifimgs.clear();
 	}
@@ -145,164 +149,242 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 			shapes.remove(item);
 			texts.remove(item);
 			buttons.remove(item);
-			buttonimgs.remove(item);
 			staticimgs.remove(item);
 			jifimgs.remove(item);
 		}
 	}
 	
-	public Vector<ICShape> retrieveShape(String item){return shapes.get(item);}
-	public Vector<CText> retrieveText(String item){return texts.get(item);}
-	public Vector<CButton> retrieveButton(String item){return buttons.get(item);}
-	public Vector<CStaticImage> retrieveStaticImg(String item){return staticimgs.get(item);}
-	public Vector<CJifImage> retrieveJifImg(String item){return jifimgs.get(item);}
+	/**
+	 * Possibility of heap pollution < Ease of use gained
+	 * Heap pollution: array given instead of a list of vars 
+	 * will not be catched, even if the array contains
+	 * incompatible data.
+	 */
+	@SuppressWarnings("unchecked")
+	public void assignGroup(String group, Vector<? extends ICItem> ... items){
+		for (Vector<? extends ICItem> vect : items)
+			for (ICItem iter : vect)
+				iter.setGroup(group);
+	}
+	
+	/**
+	 * Only returns a single item, which can be used
+	 * as a representation of a group
+	 */
+	private ICItem findIn(CTargetAgent def, Vector<? extends ICItem> vect){
+		switch (def.which){
+		case NAME:
+			for(ICItem iter : vect){
+				if(iter.getName().equals(def.name))
+					return iter;
+			}
+			break;
+		case GROUP:
+			for(ICItem iter : vect){
+				if(iter.getGroup().equals(def.group))
+					return iter;
+			}
+			break;
+		case BOTH:
+			for(ICItem iter : vect){
+				if(iter.getName().equals(def.name) && iter.getGroup().equals(def.group))
+					return iter;
+			}
+			break;
+		default:
+			System.out.println("ERR: GUIcanvas.findIn unhandled type "+def.which);
+			new Exception().printStackTrace();
+			break;
+		}
+		return null;
+	}
+
+	private Vector<ICItem> findAllIn(CTargetAgent def, Vector<? extends ICItem> vect){
+		Vector<ICItem> out = new Vector<ICItem>();
+		switch (def.which){
+		case NAME:
+			for(ICItem iter : vect){
+				if(iter.getName().equals(def.name))
+					out.add(iter);
+			}
+			break;
+		case GROUP:
+			for(ICItem iter : vect){
+				if(iter.getGroup().equals(def.group))
+					out.add(iter);
+			}
+			break;
+		case BOTH:
+			for(ICItem iter : vect){
+				if(iter.getName().equals(def.name) && iter.getGroup().equals(def.group))
+					out.add(iter);
+			}
+			break;
+		default:
+			System.out.println("ERR: GUIcanvas.findIn unhandled type "+def.which);
+			new Exception().printStackTrace();
+			break;
+		}
+		return out;
+	}
+	private Vector<ICItem> collateVectors(){
+		Vector<ICItem> out = new Vector<ICItem>();
+		out.addAll(shapes);
+		out.addAll(texts);
+		out.addAll(buttons);
+		out.addAll(staticimgs);
+		out.addAll(jifimgs);
+		return out;
+	}public ICItem retrieveItem(CTargetAgent def){
+		return findIn(def, collateVectors());
+	}public Vector<ICItem> retrieveAll(CTargetAgent def){
+		return findAllIn(def, collateVectors());
+	}
+	public ICShape retrieveShape(CTargetAgent def){return (ICShape) findIn(def, shapes);}
+	public CText retrieveText(CTargetAgent def){return (CText) findIn(def, texts);}
+	public CButton retrieveButton(CTargetAgent def){return (CButton) findIn(def, buttons);}
+	public CStaticImage retrieveStaticImg(CTargetAgent def){return (CStaticImage) findIn(def, staticimgs);}
+	public CJifImage retrieveJifImg(CTargetAgent def){return (CJifImage) findIn(def, jifimgs);}
 	
 	/**
 	 * Moves said item by the specified amount, relatively
+	 * Will move all items with the shared name
 	 */
-	public void translate(String item, double dx, double dy){
-		for(String key : texts.keySet()){
-			for(CText label : texts.get(key)){
-				label.x += dx;
-				label.y += dy;
+	public void translate(CTargetAgent def, double dx, double dy){
+		switch (def.which){
+		case NAME:
+			for(ICItem iter : collateVectors()){
+				if(iter.getName().equals(def.name)){
+					iter.setX(iter.getX()+dx);
+					iter.setY(iter.getY()+dy);
+				}
 			}
-		}
-		for(String key : shapes.keySet()){
-			for(ICShape shape : shapes.get(key)){
-				shape.moveRelative(dx, dy);
+			break;
+		case GROUP:
+			for(ICItem iter : collateVectors()){
+				if(iter.getGroup().equals(def.group)){
+					iter.setX(iter.getX()+dx);
+					iter.setY(iter.getY()+dy);
+				}
 			}
-		}
-		for(String key : staticimgs.keySet()){
-			for(CStaticImage img : staticimgs.get(key)){
-				img.x += dx;
-				img.y += dy;
+			break;
+		case BOTH:
+			for(ICItem iter : collateVectors()){
+				if(iter.getName().equals(def.name) && iter.getGroup().equals(def.group)){
+					iter.setX(iter.getX()+dx);
+					iter.setY(iter.getY()+dy);
+				}
 			}
-		}
-		for(String key : jifimgs.keySet()){
-			for(CJifImage img : jifimgs.get(key)){
-				img.x += dx;
-				img.y += dy;
-			}
-		}
-		for(String key : buttons.keySet()){
-			for(CButton btn : buttons.get(key)){
-				btn.x += dx;
-				btn.y += dy;
-				buttonimgs.remove(key);
-				buttonimgs.put(btn.name, new CStaticImage(new CImageDef(btn.bgimage, btn.x, btn.y, btn.width, btn.height, btn.getOpacity())));
-			}
+			break;
+		default:
+			System.out.println("ERR: GUIcanvas.translate unhandled type "+def.which);
+			new Exception().printStackTrace();
+			break;
 		}
 	}
 	
-	public void opacChange(String item, double dx){
-		for(String key : texts.keySet()){
-			for(CText label : texts.get(key)){
-				label.setOpacity(label.getOpacity() + dx);
+	public void opacChange(CTargetAgent def, double dx){
+		switch (def.which){
+		case NAME:
+			for(ICItem iter : collateVectors()){
+				if(iter.getName().equals(def.name)){
+					iter.setOpacity(iter.getOpacity()+dx);
+				}
 			}
-		}
-		for(String key : shapes.keySet()){
-			for(ICShape shape : shapes.get(key)){
-				shape.setOpacity(shape.getOpacity() + dx);
+			break;
+		case GROUP:
+			for(ICItem iter : collateVectors()){
+				if(iter.getGroup().equals(def.group)){
+					iter.setOpacity(iter.getOpacity()+dx);
+				}
 			}
-		}
-		for(String key : staticimgs.keySet()){
-			for(CStaticImage img : staticimgs.get(key)){
-				img.setOpacity(img.getOpacity() + dx);
+			break;
+		case BOTH:
+			for(ICItem iter : collateVectors()){
+				if(iter.getName().equals(def.name) && iter.getGroup().equals(def.group)){
+					iter.setOpacity(iter.getOpacity()+dx);
+				}
 			}
-		}
-		for(String key : jifimgs.keySet()){
-			for(CJifImage img : jifimgs.get(key)){
-				img.setOpacity(img.getOpacity() + dx);
-			}
-		}
-		for(String key : buttons.keySet()){
-			for(CButton btn : buttons.get(key)){
-				btn.setOpacity(btn.getOpacity() + dx);
-				buttonimgs.remove(btn.name);
-				buttonimgs.put(btn.name, new CStaticImage(new CImageDef(btn.bgimage, btn.x, btn.y, btn.width, btn.height, btn.getOpacity())));
-			}
+			break;
+		default:
+			System.out.println("ERR: GUIcanvas.opacChange unhandled type "+def.which);
+			new Exception().printStackTrace();
+			break;
 		}
 	}
 	
 	/**
 	 * Moves said item to the coordinate, non-relative.
+	 * 
+	 * Moving a group will move the whole group to that point
+	 * without preserving the relative displacement of 
+	 * items within the group
 	 */
-	public void moveto(String item, double x, double y){
-		for(String key : texts.keySet()){
-			for(CText label : texts.get(key)){
-				label.x = x;
-				label.y = y;
+	public void moveTo(CTargetAgent def, double x, double y){
+		switch (def.which){
+		case NAME:
+			for(ICItem iter : collateVectors()){
+				if(iter.getName().equals(def.name)){
+					iter.setX(x);
+					iter.setY(y);
+				}
 			}
-		}
-		for(String key : shapes.keySet()){
-			for(ICShape shape : shapes.get(key)){
-				shape.moveTo(x, y);
+			break;
+		case GROUP:
+			for(ICItem iter : collateVectors()){
+				if(iter.getGroup().equals(def.group)){
+					iter.setX(x);
+					iter.setY(y);
+				}
 			}
-		}
-		for(String key : staticimgs.keySet()){
-			for(CStaticImage img : staticimgs.get(key)){
-				img.x = x;
-				img.y = y;
+			break;
+		case BOTH:
+			for(ICItem iter : collateVectors()){
+				if(iter.getName().equals(def.name) && iter.getGroup().equals(def.group)){
+					iter.setX(x);
+					iter.setY(y);
+				}
 			}
-		}
-		for(String key : jifimgs.keySet()){
-			for(CJifImage img : jifimgs.get(key)){
-				img.x = x;
-				img.y = y;
-			}
-		}
-		for(String key : buttons.keySet()){
-			for(CButton btn : buttons.get(key)){
-				btn.x = x;
-				btn.y = y;
-				buttonimgs.remove(btn.name);
-				buttonimgs.put(btn.name, new CStaticImage(new CImageDef(btn.bgimage, btn.x, btn.y, btn.width, btn.height, btn.getOpacity())));
-			}
+			break;
+		default:
+			System.out.println("ERR: GUIcanvas.moveTo unhandled type "+def.which);
+			new Exception().printStackTrace();
+			break;
 		}
 	}
 	
 	/**
-	 * A single name can have only one Object of a certain class
+	 * Does not check for pre-existing items with the
+	 * same name/group combination 
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	public void addItem(String name, Object item){
-		Object comp;
-		if(item instanceof Vector<?>){
-			comp = ((Vector) item).firstElement();
-		}else{
-			comp = item;
-		}
-		if(false){ //so it's easy to swap around the other cases
-		}else if(comp instanceof CText){
-			if(texts.keySet().contains(name))
-				texts.remove(name);
-			texts.put(name, (Vector<CText>) item);
-			return;
-		}else if(comp instanceof CButton){
-			if(buttons.keySet().contains(name))
-				buttons.remove(name);
-			buttons.put(name, (Vector<CButton>) item);
-			for(CButton btn : (Vector<CButton>) item)
-				buttonimgs.put(btn.name, new CStaticImage(new CImageDef(btn.bgimage, btn.x, btn.y, btn.width, btn.height, btn.getOpacity())));
-			return;
-		}else if(comp instanceof CJifImage){ //not to be put after CStaticImage, since CJifImage extends CStaticImage
-			if(jifimgs.keySet().contains(name))
-				jifimgs.remove(name);
-			jifimgs.put(name, (Vector<CJifImage>) item);
-			return;
-		}else if(comp instanceof CStaticImage){
-			if(staticimgs.keySet().contains(name))
-				staticimgs.remove(name);
-			staticimgs.put(name, (Vector<CStaticImage>) item);
-			return;
-		}else if(comp instanceof ICShape){
-			if(shapes.keySet().contains(name))
-				shapes.remove(name);
-			shapes.put(name, (Vector<ICShape>) item);
-			return;
-		}else{
-			System.out.println("ERR: ShipBattleGUI.addItem unhandled type "+item);
+	public void addItem(Vector<? extends ICItem> item){
+		switch (item.firstElement().getType()){
+		case TEXT:
+			texts.addAll((Vector<CText>) item);
+			break;
+		case BUTTON:
+			buttons.addAll((Vector<CButton>) item);
+			break;
+		case STATICIMAGE:
+			staticimgs.addAll((Vector<CStaticImage>) item);
+			break;
+		case JIFIMAGE:
+			jifimgs.addAll((Vector<CJifImage>) item);
+			break;
+		case CIRCLE:
+		case LINE:
+		case RECT:
+		case ROUNDRECT:
+			shapes.addAll((Vector<ICShape>) item);
+			break;
+		case TEXTBOX:
+			//TODO: implement textbox add
+			break;
+		default:
+			System.out.println("ERR: GUIcanvas.addItem unhandled type "+item);
 			new Exception().printStackTrace();
+			break;
 		}
 	}
 	
@@ -313,44 +395,37 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		for(String key : texts.keySet()){
-			for(CText label : texts.get(key)){
-				g2d.setFont(label.font);
-				g2d.setColor(label.getEffectiveColor());
-				g2d.drawChars(label.text.toCharArray(), label.offset, label.len, (int)label.x, (int)label.y);
-			}
+		for(CText label : texts){
+			g2d.setFont(label.font);
+			g2d.setColor(label.getEffectiveColor());
+			g2d.drawChars(label.text.toCharArray(), label.offset, label.len, (int)label.x0, (int)label.y0);
 		}
-		for(String key : shapes.keySet()){
-			for(ICShape shape : shapes.get(key)){
-				g2d.setColor(shape.getFill());
-				g2d.fill(shape.getShape());
-		        g2d.setColor(shape.getStroke());
-		        g2d.setStroke(new BasicStroke((int)shape.getThickness()));
-		        g2d.draw(shape.getShape());
-			}
+		for(ICShape shape : shapes){
+			g2d.setColor(shape.getFill());
+			g2d.fill(shape.getShape());
+	        g2d.setColor(shape.getStroke());
+	        g2d.setStroke(new BasicStroke((int)shape.getThickness()));
+	        g2d.draw(shape.getShape());
 		}
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_DEFAULT);
 		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, graphicsQuality);
-		for(String key : staticimgs.keySet()){
-			for(CStaticImage img : staticimgs.get(key)){
-				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, img.getOpacity()));
-				g2d.drawImage(img.image, (int)img.x, (int)img.y, (int)(img.getEffectiveX1()), (int)(img.getEffectiveY1()), 0, 0, (int)img.width, (int)img.height, null);
+		for(CStaticImage img : staticimgs){
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) img.getOpacity()));
+			g2d.drawImage(img.image, (int)img.x0, (int)img.y0, (int)(img.getEffectiveX1()), (int)(img.getEffectiveY1()), 0, 0, (int)img.width, (int)img.height, null);
+		}
+		Vector<CJifImage> clone = new Vector<CJifImage>(jifimgs); //required to circumvent concurrent modification exception
+		for(CJifImage img : clone){
+			if(img.isDone())
+				jifimgs.remove(img);
+			else{
+				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) img.getOpacity()));
+				g2d.drawImage(img.image, (int)img.x0, (int)img.y0, (int)(img.getEffectiveX1()), (int)(img.getEffectiveY1()), 0, 0, (int)img.width, (int)img.height, null);
 			}
 		}
-		for(String key : jifimgs.keySet()){
-			for(CJifImage img : jifimgs.get(key)){
-				if(img.isDone())
-					jifimgs.remove(img);
-				else{
-					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, img.getOpacity()));
-					g2d.drawImage(img.image, (int)img.x, (int)img.y, (int)(img.getEffectiveX1()), (int)(img.getEffectiveY1()), 0, 0, (int)img.width, (int)img.height, null);
-				}
-			}
-		}
-		for(String key : buttonimgs.keySet()){
-			CStaticImage img = buttonimgs.get(key);
-			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, img.getOpacity()));
-			g2d.drawImage(img.image, (int)img.x, (int)img.y, null);
+		for(CButton btn : buttons){
+			//System.out.println("PROC: "+btn.name+" "+btn.x0+" "+btn.y0);
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) btn.getOpacity()));
+			g2d.drawImage(btn.getImage().image, (int)btn.x0, (int)btn.y0, null);
 		}
 	}
 
@@ -368,36 +443,42 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 	 */
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		for(String key : buttons.keySet()){
-			for(CButton btn : buttons.get(key)){
-				if(e.getX()>btn.x && e.getX()<btn.x1 && e.getY()>btn.y && e.getY()<btn.y1){
-					buttonimgs.put(btn.name, new CStaticImage(new CImageDef(btn.hoverimage, btn.x, btn.y, btn.width, btn.height, btn.getOpacity())));
-				}else{
-					buttonimgs.put(btn.name, new CStaticImage(new CImageDef(btn.bgimage, btn.x, btn.y, btn.width, btn.height, btn.getOpacity())));
-				}
-			}
+		for(CButton btn : buttons){
+			if(e.getX()>btn.x0 && e.getX()<btn.x1 && e.getY()>btn.y0 && e.getY()<btn.y1){
+				btn.showHover = true;
+			}else
+				btn.showHover = false;
 		}
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		for(String key : buttons.keySet()){
-			for(CButton btn : buttons.get(key)){
-				if(e.getX()>btn.x && e.getX()<btn.x1 && e.getY()>btn.y && e.getY()<btn.y1){
-					logic.clickEvent(e, btn.actionCommand);
-				}else{
-					logic.clickEvent(e, null);
-				}
+		for(CButton btn : buttons){
+			if(e.getX()>btn.x0 && e.getX()<btn.x1 && e.getY()>btn.y0 && e.getY()<btn.y1){
+				logic.clickEvent(e, btn.actionCommand);
+			}else{
+				logic.clickEvent(e, null);
 			}
 		}
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent arg0) {}
+	public void mouseEntered(MouseEvent arg0) {} //mouse entered the window
 	@Override
 	public void mouseExited(MouseEvent arg0) {}
 	@Override
-	public void mousePressed(MouseEvent arg0) {}
+	public void mousePressed(MouseEvent e) {
+		for(CButton btn : buttons){
+			if(e.getX()>btn.x0 && e.getX()<btn.x1 && e.getY()>btn.y0 && e.getY()<btn.y1)
+				btn.showClicked = true;
+			else
+				btn.showClicked = false;
+		}
+	}
 	@Override
-	public void mouseReleased(MouseEvent arg0) {}
+	public void mouseReleased(MouseEvent arg0) {
+		for(CButton btn : buttons){
+			btn.showClicked = false;
+		}
+	}
 }

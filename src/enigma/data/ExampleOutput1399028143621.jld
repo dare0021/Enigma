@@ -1,0 +1,15 @@
+{
+   "key4" : 
+      {
+         "key5a" : "value2",
+         "key5" : "value1"
+      },
+   "key3" : [["value1[{,", "value1,}]"], "value2"],
+   "key6" : ["value1",
+         {
+            "key8" : "value3",
+            "key7" : "value2"
+         }],
+   "key2" : ["value1", "value2"],
+   "key1" : "single item value"
+}

@@ -17,6 +17,7 @@ import javax.swing.Timer;
 
 import canvasItems.CAnimation;
 import canvasItems.CFade;
+import canvasItems.CTargetAgent;
 
 public class GUILogic implements IConstantsUI, ActionListener{
 	GUIcanvas gui;
@@ -36,8 +37,8 @@ public class GUILogic implements IConstantsUI, ActionListener{
 	 * Adding an item already being moved results in acceleration/decceleration
 	 * use length=0 for instant move
 	 */
-	public void moveRelative(String name, double dx, double dy, int length){
-		CAnimation anim = new CAnimation(name, dx, dy, length);
+	public void moveRelative(CTargetAgent def, double dx, double dy, int length){
+		CAnimation anim = new CAnimation(def, dx, dy, length);
 		animations.add(anim);
 	}
 	
@@ -45,21 +46,21 @@ public class GUILogic implements IConstantsUI, ActionListener{
 	 * Moves the item from A to B
 	 * Beware of bunching
 	 */
-	public void move(String name, double x0, double y0, double x1, double y1, int length){
-		moveto(name, x0, y0);
-		moveRelative(name, x1-x0, y0-y1, length);
+	public void move(CTargetAgent def, double x0, double y0, double x1, double y1, int length){
+		moveTo(def, x0, y0);
+		moveRelative(def, x1-x0, y0-y1, length);
 	}
 	
-	public void moveto(String name, double x, double y){
-		gui.moveto(name, x, y);
+	public void moveTo(CTargetAgent def, double x, double y){
+		gui.moveTo(def, x, y);
 	}
 	
-	public void fade(String name, double x){
-		gui.opacChange(name, x);
+	public void fade(CTargetAgent def, double x){
+		gui.opacChange(def, x);
 	}
 	
-	public void fading(String name, double dx, int length){
-		CFade anim = new CFade(name, dx, length);
+	public void fading(CTargetAgent def, double dx, int length){
+		CFade anim = new CFade(def, dx, length);
 		fadeanims.add(anim);
 	}
 	
@@ -71,7 +72,7 @@ public class GUILogic implements IConstantsUI, ActionListener{
 	 * length describes the number of shakes
 	 * As is with the other animations, effect intensifies when overlapped.
 	 */
-	public void jitter(String name, double dx, double dy, double jitterX, double jitterY, int length){
+	public void jitter(CTargetAgent def, double dx, double dy, double jitterX, double jitterY, int length){
 		LinkedBlockingQueue<CAnimation> cont = new LinkedBlockingQueue<CAnimation>();
 		int tx, ty; //total displacement
 		int ix, iy; //displacement this shake
@@ -90,9 +91,9 @@ public class GUILogic implements IConstantsUI, ActionListener{
 				iy *= -1;
 			tx += ix;
 			ty += iy;
-			cont.add(new CAnimation(name, ix, iy, 0));
+			cont.add(new CAnimation(def, ix, iy, 0));
 		}
-		cont.add(new CAnimation(name, -1*tx, -1*ty, 0));
+		cont.add(new CAnimation(def, -1*tx, -1*ty, 0));
 		try {
 			out = cont.take();
 		} catch (InterruptedException e) {
@@ -115,12 +116,12 @@ public class GUILogic implements IConstantsUI, ActionListener{
 				CAnimation anim = i.next();
 				anim.ticks++;
 				if(anim.ticks >= anim.target){
-					gui.translate(anim.item, anim.dx+anim.fx, anim.dy+anim.fy);
+					gui.translate(anim.def, anim.dx+anim.fx, anim.dy+anim.fy);
 					if((iter = anim.next()) != null)
 						next.add(iter);
 					i.remove(); //foreach loop does not support removal during loop
 				}else{
-					gui.translate(anim.item, anim.dx, anim.dy);
+					gui.translate(anim.def, anim.dx, anim.dy);
 				}
 			}
 			for(CAnimation anim : next){
@@ -135,12 +136,12 @@ public class GUILogic implements IConstantsUI, ActionListener{
 				CFade anim = i.next();
 				anim.ticks++;
 				if(anim.ticks >= anim.target){
-					gui.opacChange(anim.item, anim.dx+anim.fx);
+					gui.opacChange(anim.def, anim.dx+anim.fx);
 					if((iter = anim.next()) != null)
 						next.add(iter);
 					i.remove(); //foreach loop does not support removal during loop
 				}else{
-					gui.opacChange(anim.item, anim.dx);
+					gui.opacChange(anim.def, anim.dx);
 				}
 			}
 			for(CFade anim : next){

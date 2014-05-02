@@ -8,7 +8,7 @@ import enigma.IConstantsUI;
  * Contains the instructions for a fading animation
  */
 public class CFade implements IConstantsUI{
-	public String item;
+	public CTargetAgent def;
 	public double dx, fx;
 	public int ticks, target;
 	public LinkedBlockingQueue<CFade> continuation;
@@ -16,18 +16,18 @@ public class CFade implements IConstantsUI{
 	/**
 	 * length is time in ms
 	 */
-	public CFade(String name, double _dx, int length){
-		init(name, _dx, length, null);
-	}public CFade(String name, double _dx, int length, CFade cont){
+	public CFade(CTargetAgent def, double _dx, int length){
+		init(def, _dx, length, null);
+	}public CFade(CTargetAgent def, double _dx, int length, CFade cont){
 		LinkedBlockingQueue<CFade> q = new LinkedBlockingQueue<CFade>();
 		q.add(cont);
-		init(name, _dx, length, q);
-	}public CFade(String name, double _dx, int length, LinkedBlockingQueue<CFade> cont){
-		init(name, _dx, length, cont);
+		init(def, _dx, length, q);
+	}public CFade(CTargetAgent def, double _dx, int length, LinkedBlockingQueue<CFade> cont){
+		init(def, _dx, length, cont);
 	}
 	
-	private void init(String name, double _dx, int length, LinkedBlockingQueue<CFade> cont){
-		item = name;
+	private void init(CTargetAgent _def, double _dx, int length, LinkedBlockingQueue<CFade> cont){
+		def = _def;
 		ticks = 0;
 		target = length / REFRESHRATE;
 		if(target<1)target=1;

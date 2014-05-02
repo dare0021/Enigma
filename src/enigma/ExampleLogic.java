@@ -8,10 +8,10 @@ import java.util.Vector;
 
 import javax.sound.sampled.LineUnavailableException;
 
+import canvasItems.CTargetAgent;
 import jld.JLD;
 import jld.JldGetter;
 import jld.JldSetter;
-
 import sound.BigClip;
 import sound.SClip;
 
@@ -70,21 +70,20 @@ public class ExampleLogic extends GUILogic implements KeyListener{
 		System.out.println("find: "+jld.find("d.d1:1")); //41
 	}
 
-	private boolean swit = false;
 	public void clickEvent(MouseEvent e, String actionCommand) {
+		CTargetAgent def = new CTargetAgent("", "testgrid", GROUP);
 		if(actionCommand == null)
 			return;
 		switch (actionCommand){
 		case "GridTest Action":
-			//jitter("testgrid", 20, 5, 20, 0, 20);
-			moveRelative("testgrid", 100, 0, 1000);
+			jitter(def, 20, 5, 20, 0, 20);
+			//moveRelative(new CTargetAgent("", "testgrid", GROUP), 100, 0, 1000);
 			break;
 		case "GridTest Action Fade":
-			swit = !swit;
-			if(swit)
-				fading("testgrid", -1, 1000);
+			if(gui.retrieveItem(def).getOpacity() > 0)
+				fading(def, -1, 1000);
 			else
-				fading("testgrid", 1, 1000);
+				fading(def, 1, 1000);
 			break;
 		}
 	}

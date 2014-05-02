@@ -8,7 +8,7 @@ import enigma.IConstantsUI;
  * Contains the instructions for an animation
  */
 public class CAnimation implements IConstantsUI{
-	public String item;
+	public CTargetAgent def;
 	public double dx, dy, fx, fy;
 	public int ticks, target;
 	public LinkedBlockingQueue<CAnimation> continuation;
@@ -16,18 +16,18 @@ public class CAnimation implements IConstantsUI{
 	/**
 	 * length is time in ms
 	 */
-	public CAnimation(String name, double _dx, double _dy, int length){
-		init(name, _dx, _dy, length, null);
-	}public CAnimation(String name, double _dx, double _dy, int length, CAnimation cont){
+	public CAnimation(CTargetAgent def, double _dx, double _dy, int length){
+		init(def, _dx, _dy, length, null);
+	}public CAnimation(CTargetAgent def, double _dx, double _dy, int length, CAnimation cont){
 		LinkedBlockingQueue<CAnimation> q = new LinkedBlockingQueue<CAnimation>();
 		q.add(cont);
-		init(name, _dx, _dy, length, q);
-	}public CAnimation(String name, double _dx, double _dy, int length, LinkedBlockingQueue<CAnimation> cont){
-		init(name, _dx, _dy, length, cont);
+		init(def, _dx, _dy, length, q);
+	}public CAnimation(CTargetAgent def, double _dx, double _dy, int length, LinkedBlockingQueue<CAnimation> cont){
+		init(def, _dx, _dy, length, cont);
 	}
 	
-	private void init(String name, double _dx, double _dy, int length, LinkedBlockingQueue<CAnimation> cont){
-		item = name;
+	private void init(CTargetAgent _def, double _dx, double _dy, int length, LinkedBlockingQueue<CAnimation> cont){
+		def = _def;
 		ticks = 0;
 		target = length / REFRESHRATE;
 		if(target<1)target=1;

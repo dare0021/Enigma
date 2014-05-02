@@ -7,10 +7,11 @@ import java.awt.geom.Line2D;
  * X, Y, W, H, Stroke width are stored in Shape
  */
 public class CLine extends ACShape{
-	
-	public CLine(double xFrom, double yFrom, double xTo, double yTo){
+	public CLine(double xFrom, double yFrom, double xTo, double yTo, String name){
+		super(name);
 		init(xFrom, yFrom, xTo, yTo, Color.WHITE, 1);
-	}public CLine(CLine orig){
+	}public CLine(CLine orig, String name){
+		super(name);
 		init(orig.x0, orig.y0, orig.x1, orig.y1, orig.stroke, orig.thickness);
 	}
 	

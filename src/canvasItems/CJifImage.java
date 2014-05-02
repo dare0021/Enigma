@@ -23,11 +23,11 @@ public class CJifImage extends CStaticImage implements ActionListener{
 	
 	private boolean deleting; //Not a publically available member
 	
-	public CJifImage(CImageDef def, double fps, int n){
-		super(def, 0);
+	public CJifImage(CImageDef def, double fps, int n, String name){
+		super(def, 0, name);
 		init(def.address, fps, n, 0, 0, n-1);
-	}public CJifImage(CImageDef def,  double fps, int n, int start, int current, int end){
-		super(def, current);
+	}public CJifImage(CImageDef def,  double fps, int n, int start, int current, int end, String name){
+		super(def, current, name);
 		init(def.address, fps, n, start, current, end);
 	}private void init(String url, double fps, int n, int start, int current, int end){
 		if(start > end){
