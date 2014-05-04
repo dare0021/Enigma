@@ -16,17 +16,15 @@ package canvasItems;
  */
 
 public class CButton extends ACItem{
-	public double x1, y1, width, height;
-	public boolean showHover, showClicked;
-	public final String actionCommand;
-	public final CStaticImage bgimage, hoverimage, clickimage;
+	public double x1, y1;
+	public boolean showHover, showClicked, enabled;
+	public String actionCommand;
+	public CStaticImage bgimage, hoverimage, clickimage;
 	
 	public CButton(CButtonDef def, String name, String actionCmd){
 		super(name);
 		x0 = def.x;
 		y0 = def.y;
-		width = def.width;
-		height = def.height;
 		opacity = def.opacity;
 		x1 = x0 + def.width;
 		y1 = y0 + def.height;
@@ -36,6 +34,7 @@ public class CButton extends ACItem{
 		actionCommand = actionCmd;
 		showHover = false;
 		showClicked = false;
+		enabled = true;
 	}
 	
 	public CStaticImage getImage(){
@@ -45,5 +44,25 @@ public class CButton extends ACItem{
 			return hoverimage;
 		else
 			return bgimage;
+	}
+
+	public double getX0() {return x0;}
+	public double getY0() {return y0;}
+	public double getWidth() {return x1-x0;}
+	public double getHeight() {return y1-y0;}
+	public boolean isEnabled(){return enabled;}
+	
+	public void setX0(double x) {x0 = x;}
+	public void setY0(double y) {y0 = y;}
+	public void setEnabled(boolean e){enabled = e;}
+	
+	public void setX(double x){
+		double width = getWidth();
+		x0 = x;
+		x1 = x0 + width;
+	}public void setY(double y){
+		double height = getHeight();
+		y0 = y;
+		y1 = y0 + height;
 	}
 }

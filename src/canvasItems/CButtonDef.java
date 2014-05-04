@@ -15,5 +15,4 @@ public class CButtonDef {
 		hoverimage = hover;
 		clickimage = click;
 	}
-
 }

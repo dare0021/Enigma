@@ -76,8 +76,8 @@ public class ExampleLogic extends GUILogic implements KeyListener{
 			return;
 		switch (actionCommand){
 		case "GridTest Action":
-			jitter(def, 20, 5, 20, 0, 20);
-			//moveRelative(new CTargetAgent("", "testgrid", GROUP), 100, 0, 1000);
+			//jitter(def, 20, 5, 20, 0, 20);
+			moveRelative(new CTargetAgent("", "testgrid", GROUP), 100, 0, 1000);
 			break;
 		case "GridTest Action Fade":
 			if(gui.retrieveItem(def).getOpacity() > 0)

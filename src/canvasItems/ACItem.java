@@ -52,8 +52,8 @@ public abstract class ACItem implements ICItem{
 			return ECItemType.LINE;
 		}else if(comp instanceof CRoundRect){
 			return ECItemType.ROUNDRECT;
-		/*}else if(comp instanceof CTextBox){
-			return ECItemType.TEXTBOX;*/ //TODO:textbox
+		}else if(comp instanceof CTextBox){
+			return ECItemType.TEXTBOX;
 		}else{
 			System.out.println("ERR: ECItemType.getType unhandled type "+this);
 			new Exception().printStackTrace();

@@ -10,22 +10,6 @@ public abstract class ACShape extends ACItem implements ICShape {
 		super(name);
 	}
 	
-	@Override
-	public void moveRelative(double dx, double dy){
-		setX(getX()+dx);
-		setX1(getX1()+dx);
-		setY(getY()+dy);
-		setY1(getY1()+dy);
-	}
-	@Override
-	public void moveTo(double tx, double ty){
-		double w = getWidth();
-		double h = getHeight();
-		setX(tx);
-		setWidth(w);
-		setY(ty);
-		setHeight(h);
-	}
 	private Color getEffective(Color color){
 		return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha()*getOpacity()));
 	}

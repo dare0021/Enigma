@@ -24,6 +24,7 @@ public class CanvasFactory{
 	public String msg;
 	public String url;
 	public CStaticImage bgimage, hoverimage, clickimage;
+	public int length;
 	
 	public void setLocation(double xpos, double ypos){x = xpos; y = ypos;}
 	public void setSize(double w, double h){width = w; height = h;}
@@ -31,4 +32,5 @@ public class CanvasFactory{
 	public CTextDef createTextDef(){return new CTextDef(msg, x, y, fillColor, font);}
 	public CImageDef createImageDef(){return new CImageDef(url, x, y, width, height, opacity);}
 	public CButtonDef createButtonDef(){return new CButtonDef(x, y, width, height, opacity, bgimage, hoverimage, clickimage);}
+	public CTextBoxDef createTextBoxDef(){return new CTextBoxDef(x, y, width, height, opacity, bgimage, hoverimage, font, fillColor, length);}
 }

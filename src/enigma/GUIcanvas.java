@@ -12,6 +12,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -21,11 +23,13 @@ import javax.swing.JPanel;
 
 import canvasItems.*;
 
-class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotionListener, MouseListener {
+class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotionListener, MouseListener, KeyListener {
 	private final String dir = "GUI Test/"; 
+	private CTextBox focusedTextBox;
 	Vector<ICShape> shapes; 
 	Vector<CText> texts; 
 	Vector<CButton> buttons;
+	Vector<CTextBox> textboxes;
 	Vector<CStaticImage> staticimgs;
 	Vector<CJifImage> jifimgs;
 	ExampleLogic logic;
@@ -36,10 +40,12 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 		shapes = new Vector<ICShape>();
 		texts = new Vector<CText>();
 		buttons = new Vector<CButton>();
+		textboxes = new Vector<CTextBox>();
 		staticimgs = new Vector<CStaticImage>();
 		jifimgs = new Vector<CJifImage>();
 		this.addMouseMotionListener(this);
 		this.addMouseListener(this);
+		this.addKeyListener(this);
 	}public void linkLogic(ExampleLogic parent){
 		logic = parent;
 	}
@@ -55,6 +61,7 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 		Vector<CStaticImage> gridimg = new Vector<CStaticImage>();
 		Vector<CJifImage> jifimg = new Vector<CJifImage>();
 		Vector<CButton> btns = new Vector<CButton>();
+		Vector<CTextBox> boxes = new Vector<CTextBox>();
 		
 		cf.fillColor = Color.WHITE;
 		cf.font = new Font("Ariel", Font.PLAIN, 12);
@@ -101,6 +108,18 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 		((CJifImage) cf.hoverimage).start();
 		btns.add(new CButton(cf.createButtonDef(), "GridTestButton2", "GridTest Action Fade"));
 		
+		cf.setLocation(500, 150);
+		cf.setSize(300, 50);
+		cf.url = dir + "txtBG.png";
+		cf.bgimage = new CStaticImage(cf.createImageDef(), "dummy");
+		cf.url = dir + "txtHover.png";
+		cf.hoverimage = new CStaticImage(cf.createImageDef(), "dummy");
+		cf.fillColor = Color.BLACK;
+		cf.length = 10;
+		cf.font = new Font("Ariel", Font.BOLD, 30);
+		boxes.add(new CTextBox(cf.createTextBoxDef(), "GridTest txt"));
+		
+		cf.fillColor = Color.WHITE;
 		CRect rect = new CRect(520, 220, 100, 100, "GridTestRect");
 		rect.setStroke(new Color(255, 255, 255, 100));
 		rect.setFill(new Color(255, 0, 0, 200));
@@ -125,12 +144,13 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 		for(CJifImage img : jifimg)
 			img.start();
 		
-		assignGroup("testgrid", grid, gridlbl, gridimg, btns, jifimg);
+		assignGroup("testgrid", grid, gridlbl, gridimg, btns, jifimg, boxes);
 		addItem(grid);
 		addItem(gridlbl);
 		addItem(gridimg);
 		addItem(btns);
 		addItem(jifimg);
+		addItem(boxes);
 	}
 	
 	/**
@@ -140,6 +160,7 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 		shapes.clear();
 		texts.clear();
 		buttons.clear();
+		textboxes.clear();
 		staticimgs.clear();
 		jifimgs.clear();
 	}
@@ -149,6 +170,7 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 			shapes.remove(item);
 			texts.remove(item);
 			buttons.remove(item);
+			textboxes.remove(item);
 			staticimgs.remove(item);
 			jifimgs.remove(item);
 		}
@@ -232,6 +254,7 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 		out.addAll(shapes);
 		out.addAll(texts);
 		out.addAll(buttons);
+		out.addAll(textboxes);
 		out.addAll(staticimgs);
 		out.addAll(jifimgs);
 		return out;
@@ -243,6 +266,7 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 	public ICShape retrieveShape(CTargetAgent def){return (ICShape) findIn(def, shapes);}
 	public CText retrieveText(CTargetAgent def){return (CText) findIn(def, texts);}
 	public CButton retrieveButton(CTargetAgent def){return (CButton) findIn(def, buttons);}
+	public CTextBox retrieveTextBox(CTargetAgent def){return (CTextBox) findIn(def, textboxes);}
 	public CStaticImage retrieveStaticImg(CTargetAgent def){return (CStaticImage) findIn(def, staticimgs);}
 	public CJifImage retrieveJifImg(CTargetAgent def){return (CJifImage) findIn(def, jifimgs);}
 	
@@ -379,7 +403,7 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 			shapes.addAll((Vector<ICShape>) item);
 			break;
 		case TEXTBOX:
-			//TODO: implement textbox add
+			textboxes.addAll((Vector<CTextBox>) item);
 			break;
 		default:
 			System.out.println("ERR: GUIcanvas.addItem unhandled type "+item);
@@ -389,12 +413,13 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 	}
 	
 	/**
-	 * Should never be called by itself
+	 * Should never be called directly
 	 */
 	public void paint(Graphics g){
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, graphicsQuality);
 		for(CText label : texts){
 			g2d.setFont(label.font);
 			g2d.setColor(label.getEffectiveColor());
@@ -407,8 +432,6 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 	        g2d.setStroke(new BasicStroke((int)shape.getThickness()));
 	        g2d.draw(shape.getShape());
 		}
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_DEFAULT);
-		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, graphicsQuality);
 		for(CStaticImage img : staticimgs){
 			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) img.getOpacity()));
 			g2d.drawImage(img.image, (int)img.x0, (int)img.y0, (int)(img.getEffectiveX1()), (int)(img.getEffectiveY1()), 0, 0, (int)img.width, (int)img.height, null);
@@ -423,9 +446,16 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 			}
 		}
 		for(CButton btn : buttons){
-			//System.out.println("PROC: "+btn.name+" "+btn.x0+" "+btn.y0);
 			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) btn.getOpacity()));
 			g2d.drawImage(btn.getImage().image, (int)btn.x0, (int)btn.y0, null);
+		}
+		for(CTextBox txt : textboxes){
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) txt.getOpacity()));
+			g2d.drawImage(txt.getImage().image, (int)txt.x0, (int)txt.y0, null);
+			
+			g2d.setFont(txt.getFont());
+			g2d.setColor(txt.getEffectiveColor());
+			g2d.drawChars(txt.getText().toCharArray(), txt.getOffset(), txt.getPrintLength(), (int)txt.getTextX(), (int)txt.getTextY());
 		}
 	}
 
@@ -444,21 +474,43 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		for(CButton btn : buttons){
-			if(e.getX()>btn.x0 && e.getX()<btn.x1 && e.getY()>btn.y0 && e.getY()<btn.y1){
+			if(btn.isEnabled() && e.getX()>btn.x0 && e.getX()<btn.x1 && e.getY()>btn.y0 && e.getY()<btn.y1){
 				btn.showHover = true;
 			}else
 				btn.showHover = false;
+		}for(CTextBox txt : textboxes){
+			if(txt.isEnabled() && ((txt.hasFocus()) || 
+									(e.getX()>txt.x0 && e.getX()<txt.x1 && e.getY()>txt.y0 && e.getY()<txt.y1))){
+				txt.showHover = true;
+			}else{
+				txt.showHover = false;
+			}
 		}
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		boolean actionSent = false;
 		for(CButton btn : buttons){
-			if(e.getX()>btn.x0 && e.getX()<btn.x1 && e.getY()>btn.y0 && e.getY()<btn.y1){
+			if(btn.isEnabled() && e.getX()>btn.x0 && e.getX()<btn.x1 && e.getY()>btn.y0 && e.getY()<btn.y1){
 				logic.clickEvent(e, btn.actionCommand);
-			}else{
-				logic.clickEvent(e, null);
+				actionSent = true;
+				focusedTextBox = null;
 			}
+		}
+		for(CTextBox txt : textboxes){
+			if(txt.isEnabled() && (e.getX()>txt.x0 && e.getX()<txt.x1 && e.getY()>txt.y0 && e.getY()<txt.y1)){
+				txt.setFocus(true);
+				logic.clickEvent(e, txt.actionCommand);
+				actionSent = true;
+				focusedTextBox = txt;
+			}else{
+				txt.setFocus(false);
+			}
+		}
+		if(!actionSent){
+			focusedTextBox = null;
+			logic.clickEvent(e, null);
 		}
 	}
 
@@ -469,16 +521,28 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 	@Override
 	public void mousePressed(MouseEvent e) {
 		for(CButton btn : buttons){
-			if(e.getX()>btn.x0 && e.getX()<btn.x1 && e.getY()>btn.y0 && e.getY()<btn.y1)
+			if(btn.isEnabled() && e.getX()>btn.x0 && e.getX()<btn.x1 && e.getY()>btn.y0 && e.getY()<btn.y1)
 				btn.showClicked = true;
-			else
-				btn.showClicked = false;
 		}
 	}
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 		for(CButton btn : buttons){
 			btn.showClicked = false;
+		}
+	}
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if(focusedTextBox != null){
+			focusedTextBox.isValidControlChar(e);
+		}
+	}
+	@Override
+	public void keyReleased(KeyEvent e) {}
+	@Override
+	public void keyTyped(KeyEvent e) {
+		if(focusedTextBox != null){
+			focusedTextBox.keyEvent(e);
 		}
 	}
 }
