@@ -7,6 +7,7 @@ public interface IConstantsUI {
 	public final int APPWIDTH = 800;
 	public final int APPHEIGHT = 450; //16:9
 	public final int REFRESHRATE = 17; //~60Hz
+	public final double OPACITY_THRESHOLD = 0.0001;
 	
 	///////////////////////////////////////////////////////////////////////////////
 	//Enum substitutes

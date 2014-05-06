@@ -2,11 +2,17 @@ package canvasItems;
 
 import java.util.Vector;
 
+import enigma.IConstantsUI;
+
 /**
  * Note that names and group names are not checked for uniqueness
+ * threshold describes the threshold for fully transparent/opaque objects
+ * e.g. an object that is <threshold opaque is fully transparent, and
+ * 		an object that is >threshold opaque is fully opaque
  */
-public abstract class ACItem implements ICItem{
+public abstract class ACItem implements ICItem, IConstantsUI{
 	public final String name;
+	private final double threshold = OPACITY_THRESHOLD;
 	public String group;
 	public double x0, y0, opacity;
 	protected ECItemType type;
@@ -25,9 +31,9 @@ public abstract class ACItem implements ICItem{
 	
 	public double getOpacity(){return opacity;}
 	public void setOpacity(double o) {
-		if(o<0)
+		if(o<threshold)
 			o = 0;
-		else if(o>1)
+		else if(o>1-threshold)
 			o = 1;
 		opacity = o;
 	}

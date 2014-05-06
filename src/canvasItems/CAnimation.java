@@ -33,11 +33,8 @@ public class CAnimation implements IConstantsUI{
 		if(target<1)target=1;
 		dx = _dx / target;
 		dy = _dy / target;
-		double fudge = ((double)length/REFRESHRATE) - target;
-		if(target==1)return;
-		fx = dx * fudge;
-		fy = dy * fudge;
 		continuation = cont;
+		if(target==1)return;
 	}
 	
 	public CAnimation next(){

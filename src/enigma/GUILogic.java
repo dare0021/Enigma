@@ -65,11 +65,54 @@ public class GUILogic implements IConstantsUI, ActionListener{
 	}
 	
 	/**
+	 * Performs a fade where each dx is described using a curve 
+	 * f(x)=1/(acc*x).
+	 * length describes the time in ms
+	 */
+	public void accFading(CTargetAgent def, double dx, int length, double accx){
+		LinkedBlockingQueue<CFade> cont = new LinkedBlockingQueue<CFade>();
+		CFade out = null;
+		double ix, tx = 0;
+		double cx = accx*dx/(Math.log(length+1));
+		for (int t=1; t <= length/REFRESHRATE; t++){
+			ix = cx/(accx*(t-0.5));
+			tx += ix;
+			cont.add(new CFade(def, ix, 1));
+		}
+		out = new CFade(def, dx-tx, 1);
+		out.continuation = cont;
+		fadeanims.add(out);
+	}
+	
+	/**
+	 * Performs a move where each dx dy are described using a curve 
+	 * f(x)=1/(acc*x).
+	 * length describes the time in ms
+	 */
+	public void accMove(CTargetAgent def, double dx, double dy, int length, double accx, double accy){
+		LinkedBlockingQueue<CAnimation> cont = new LinkedBlockingQueue<CAnimation>();
+		CAnimation out = null;
+		double ix, iy, tx = 0, ty = 0;
+		double cx = accx*dx/(Math.log(length+1));
+		double cy = accy*dy/(Math.log(length+1));
+		for (int t=1; t <= length/REFRESHRATE; t++){
+			ix = cx/(accx*(t-0.5));
+			tx += ix;
+			iy = cy/(accy*(t-0.5));
+			ty += iy;
+			cont.add(new CAnimation(def, ix, iy, 1));
+		}
+		out = new CAnimation(def, dx-tx, dy-ty, 1);
+		out.continuation = cont;
+		animations.add(out);
+	}
+	
+	/**
 	 * Creates a shaking motion with the item going in a random direction in a random amount.
 	 * The motion always stops at the object's original point.
 	 * jitterX and jitterY describes the maximum difference in each dx and dy element, with dx and dy being the minimum
 	 * and dx+randomness and dy+randomness being the maximum
-	 * length describes the number of shakes
+	 * length describes the number of shakes, not the time in ms.
 	 * As is with the other animations, effect intensifies when overlapped.
 	 */
 	public void jitter(CTargetAgent def, double dx, double dy, double jitterX, double jitterY, int length){

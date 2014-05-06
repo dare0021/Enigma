@@ -473,6 +473,8 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 	 */
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		//System.out.println(this.retrieveButton(new CTargetAgent("","testgrid",GROUP)).x0);
+		System.out.println(this.retrieveButton(new  CTargetAgent("","testgrid",GROUP)).opacity);
 		for(CButton btn : buttons){
 			if(btn.isEnabled() && e.getX()>btn.x0 && e.getX()<btn.x1 && e.getY()>btn.y0 && e.getY()<btn.y1){
 				btn.showHover = true;
