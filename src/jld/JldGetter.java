@@ -3,32 +3,100 @@ package jld;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
 import javax.management.BadStringOperationException;
 
 /**
  * Opens and parses the JLD data in a file
  */
-public class JldGetter {
-	public JldGetter(){}
+public class JldGetter implements IJLDGlobalFinals {
+	private final String default_dir;
+	HttpURLConnection connection;
+	public JldGetter(){
+		if(USE_IMPORT_DIR)
+			default_dir = IMPORT_DIR;
+		else
+			default_dir = System.getProperty("user.home")+"/";
+	}public JldGetter(String parent_dir){
+		default_dir = parent_dir;
+	}
+	
+	/**
+	 * Public access function
+	 */ 
+	public JLD getValues(String url, int timeout){
+		return finalize(download(url, timeout));
+	}/**
+	*	Will use the default path
+	*	Use getValues(File) to not use default path
+	*/
+	public JLD getValues(String filepath){
+		return finalize(processStream(getClass().getResourceAsStream(default_dir+filepath)));
+	}public JLD getValues(File file){
+		return finalize(processStream(getFromFile(file)));
+	}
+	public JLD finalize(ArrayList<String> raw){
+		raw = stripper(raw);
+		String input = "";
+		for(String s : raw)
+			input += s;
+		return new JLD(parseDoc(input));
+	}
 	
 	/**
 	 * Returns the raw downloaded data
 	 */
-	public Vector<String> download(String url){
+	public ArrayList<String> download(String url, int port){
+		try{
+			open(url, port);
+			BufferedReader buffreader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
+			String temp;
+			ArrayList<String> out = new ArrayList<String>();
+			while((temp=buffreader.readLine()) != null){
+				out.add(temp);
+			}
+			//System.out.println("downloaded: "+out);
+			close();
+			return out;
+		}catch(IOException e){
+			System.out.println("ERR: download failure "+e);
+			return null;
+		}
+	}
+	
+	private void open(String url, int timeout){
+		try{
+			connection = (HttpURLConnection) new URL(url).openConnection();
+			connection.setConnectTimeout(timeout);
+			connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
+			connection.connect();
+			if(connection.getResponseCode() != 200){
+				System.out.println("ERR: open failure "+connection.getResponseCode());
+				close();
+			}
+		}catch(IOException e){
+			System.out.println("ERR: open failure "+e);
+		}
+	}
+	
+	/**
+	 * Returns the raw data
+	 */
+	public ArrayList<String> processStream(InputStream is){
 		BufferedReader buffreader = null;
 		try{
-			buffreader = new BufferedReader(new InputStreamReader(new FileInputStream(openFile(url)), "utf-8"));
+			buffreader = new BufferedReader(new InputStreamReader(is, "utf-8"));
 			String temp;
-			Vector<String> out = new Vector<String>();
+			ArrayList<String> out = new ArrayList<String>();
 			while((temp=buffreader.readLine()) != null){
 				out.add(temp);
 			}
@@ -40,28 +108,40 @@ public class JldGetter {
 		}
 	}
 	
-	protected File openFile(String url){
-		File f = null;
+	public FileInputStream getFromFile(File file){
 		try {
-			f = new File(getClass().getResource("/enigma/data/"+url).toURI());
-		}catch (Exception e){
-			System.out.println("Cannot find "+url);
+			return new FileInputStream(file);
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		return f;
+		return null;
 	}
 	
-	/**
-	 * Public access function
-	 */ 
-	public JLD getValues(String url){
-		Vector<String> raw = download(url);
-		raw = stripper(raw);
-		String input = "";
-		for(String s : raw)
-			input += s;
-		return new JLD(parseDoc(input));
+	private void close(){
+		if(connection == null)
+			return;
+		connection.disconnect();
 	}
+	
+//	private File openFile(String url){
+//		File f = null;
+//		try {
+//			f = new File(getClass().getResource(url).toURI());
+//		}catch (NullPointerException e){
+//			System.out.println("No such file "+url);
+//			e.printStackTrace();
+//			return null;
+//		}catch (SecurityException e){
+//			System.out.println("Security violation: cannot access "+url);
+//			e.printStackTrace();
+//			return null;
+//		} catch (URISyntaxException e) {
+//			System.out.println("Invalid URI "+url);
+//			e.printStackTrace();
+//			return null;
+//		}
+//		return f;
+//	}
 	
 	private HashMap parseDoc(String raw){
 		HashMap<String, Object> out = null; 
@@ -127,9 +207,9 @@ public class JldGetter {
 	 * Cannot parse fields containing objects
 	 * Example input: "Id","101010100","Name"
 	 */
-	private Vector parseList(String raw) throws IndexOutOfBoundsException{
+	private ArrayList parseList(String raw) throws IndexOutOfBoundsException{
 		String orig = raw;
-		Vector<Object> out = new Vector<Object>();
+		ArrayList<Object> out = new ArrayList<Object>();
 		while(raw.indexOf('"')>=0){
 			if(raw.charAt(0) == '"'){
 				out.add(stringBetween(raw, '"'));
@@ -153,8 +233,8 @@ public class JldGetter {
 	 * Used only by JLD offline documents
 	 * Actual JSON strings do not contain comments...or lines
 	 */
-	private Vector<String> stripper(Vector<String> in){
-		Vector<String> out = new Vector<String>();
+	private ArrayList<String> stripper(ArrayList<String> in){
+		ArrayList<String> out = new ArrayList<String>();
 		boolean blockquote = false;
 		for(String s : in){
 			for(int i=0; i<s.length()-1; i++){

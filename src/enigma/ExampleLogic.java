@@ -4,16 +4,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
-import java.util.Vector;
-
-import javax.sound.sampled.LineUnavailableException;
-
+import java.util.ArrayList;
 import canvasItems.CTargetAgent;
 import jld.JLD;
 import jld.JldGetter;
 import jld.JldSetter;
 import sound.BigClip;
-import sound.SClip;
 
 public class ExampleLogic extends GUILogic implements KeyListener{
 	public ExampleLogic(ExampleGUI shipbattlegui){
@@ -27,17 +23,18 @@ public class ExampleLogic extends GUILogic implements KeyListener{
 	
 	private void test(){
 		//GUI test
-		gui.drawTestGrid();
+		GUITest test = new GUITest(gui);
+		test.drawGridTest();
 		//JLD import test
 		JldGetter jg = new JldGetter();
-		JLD jld = jg.getValues("example.jld");
-		Vector v = (Vector) jld.get("key3");
-		v = (Vector) v.get(0);
+		JLD jld = jg.getValues("static/example.jld");
+		ArrayList v = (ArrayList) jld.get("key3");
+		v = (ArrayList) v.get(0);
 		System.out.print("JLD IO test: ");
 		System.out.println(jld);
 		//JLD export test
 		JldSetter js = new JldSetter();
-		js.setValues("ExampleOutput"+System.currentTimeMillis()+".jld", jld);
+		js.setValues("temp/ExampleOutput"+System.currentTimeMillis()+".jld", jld);
 		jld.clear();
 		jld.put("a", "1");
 		v.clear();
@@ -49,18 +46,18 @@ public class ExampleLogic extends GUILogic implements KeyListener{
 		hme.put("c1", "30");
 		hme.put("c2", "31");
 		jld.put("c", hme);
-		HashMap<String, Vector<String>> hmv = new HashMap<String, Vector<String>>();
-		Vector<String> v1 = new Vector<String>();
+		HashMap<String, ArrayList<String>> hmv = new HashMap<String, ArrayList<String>>();
+		ArrayList<String> v1 = new ArrayList<String>();
 		v1.add("40");
 		v1.add("41");
-		Vector<String> v2 = new Vector<String>();
+		ArrayList<String> v2 = new ArrayList<String>();
 		v2.add("45");
 		v2.add("46");
 		hmv.put("d1", v1);
 		hmv.put("d2", v2);
 		jld.put("d", hmv);
-		Vector<Object> vv = new Vector<Object>();
-		Vector<String> vi = new Vector<String>();
+		ArrayList<Object> vv = new ArrayList<Object>();
+		ArrayList<String> vi = new ArrayList<String>();
 		vi.add("51");
 		vi.add("52");
 		vv.add(vi);

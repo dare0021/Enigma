@@ -2,15 +2,16 @@ package jld;
 
 import java.util.HashMap;
 import java.util.Set;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * The in-code representation of a JLD
  * Because .find()
+ * Values are stored using the .toString() method of each value
  */
 public class JLD{
 	private HashMap<String, Object> hm = null;
-	public JLD(){super();}
+	public JLD(){super(); hm = new HashMap<String, Object>();}
 	public JLD(HashMap h){super(); hm = h;}
 	
 	public Object get(String raw){
@@ -56,7 +57,7 @@ public class JLD{
 					ot = ((HashMap)ot).get(st);
 					st = "";
 				}else{
-					ot = ((Vector)ot).get(Integer.parseInt(st));
+					ot = ((ArrayList)ot).get(Integer.parseInt(st));
 					st = "";
 				}
 			}
