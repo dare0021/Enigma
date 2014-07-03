@@ -11,7 +11,8 @@ public enum ECItemType implements IStringsGUI{
 	RECT(RECT_DESC),
 	ROUNDRECT(ROUNDRECT_DESC),
 	STATICIMAGE(STATICIMAGE_DESC),
-	TEXT(TEXT_DESC);
+	TEXT(TEXT_DESC),
+	GROUPNODE(GROUPNODE_DESC);
 	
 	private final String desc;
 	

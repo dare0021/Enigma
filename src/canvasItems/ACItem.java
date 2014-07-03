@@ -1,7 +1,5 @@
 package canvasItems;
 
-import java.util.Vector;
-
 import enigma.IConstantsUI;
 
 /**
@@ -10,24 +8,37 @@ import enigma.IConstantsUI;
  * e.g. an object that is <threshold opaque is fully transparent, and
  * 		an object that is >threshold opaque is fully opaque
  */
-public abstract class ACItem implements ICItem, IConstantsUI{
+public abstract class ACItem implements ICItem, Comparable<ACItem>, IConstantsUI{
 	public final String name;
 	private final double threshold = OPACITY_THRESHOLD;
-	public String group;
-	public double x0, y0, opacity;
+	private final double z_increment = DEPTH_INCREMENT;
+	private final int z_polarity = DEPTH_FROM_SCREEN ? 1 : -1;
+	private double depth, opacity;
+	public CGroupNode parent;
+	public double x0, y0;
 	protected ECItemType type;
 	
 	protected ACItem(String _name){
 		name = _name;
+		opacity = 1;
+		depth = 0;
 	}
 	
 	public String getName(){return name;}
-	public String getGroup(){return group;}
-	public void setGroup(String g){group = g;}
+	public CGroupNode getParent(){return parent;}
+	protected void setParent(CGroupNode g){parent = g;}
 	public double getX(){return x0;}
 	public void setX(double x){x0 = x;}
 	public double getY(){return y0;}
 	public void setY(double y){y0 = y;}
+	
+	public double getDepth(){return depth;}
+	public void setDepth(double z){depth = z;}
+	/** 
+	 * Slightly increases depth
+	 */
+	public void moveForward(){setDepth(getDepth() + z_increment * z_polarity);}
+	public void moveBackward(){setDepth(getDepth() - z_increment * z_polarity);}
 	
 	public double getOpacity(){return opacity;}
 	public void setOpacity(double o) {
@@ -60,6 +71,8 @@ public abstract class ACItem implements ICItem, IConstantsUI{
 			return ECItemType.ROUNDRECT;
 		}else if(comp instanceof CTextBox){
 			return ECItemType.TEXTBOX;
+		}else if(comp instanceof CGroupNode){
+			return ECItemType.GROUPNODE;
 		}else{
 			System.out.println("ERR: ECItemType.getType unhandled type "+this);
 			new Exception().printStackTrace();
@@ -68,10 +81,27 @@ public abstract class ACItem implements ICItem, IConstantsUI{
 	}
 	
 	public void moveRelative(double dx, double dy){
-		x0 += dx;
-		y0 += dy;
+		setX(getX()+dx);
+		setY(getY()+dy);
 	}public void moveTo(double tx, double ty){
-		x0 = tx;
-		y0 = ty;
+		setX(tx);
+		setY(ty);
+	}
+	
+	public void opacChange(double dx){
+		setOpacity(getOpacity()+dx);
+	}
+	
+	/**
+	 * Uses an offset of 1 from the zero to prevent ((int)(0.xxxx == 0))
+	 */
+	public int compareTo(ACItem b){
+		double diff = this.getDepth()-b.getDepth();
+		if(diff > 0)
+			return ((int)diff)+1;
+		else if(diff < 0)
+			return ((int)diff)-1;
+		else
+			return 0;
 	}
 }

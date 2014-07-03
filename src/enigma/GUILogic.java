@@ -10,24 +10,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.Vector;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.Timer;
 
+import canvasItems.ACItem;
 import canvasItems.CAnimation;
 import canvasItems.CFade;
-import canvasItems.CTargetAgent;
 
 public class GUILogic implements IConstantsUI, ActionListener{
 	GUIcanvas gui;
 	Timer timer;
-	Vector<CAnimation> animations;
-	Vector<CFade> fadeanims;
+	ArrayList<CAnimation> animations;
+	ArrayList<CFade> fadeanims;
 	
 	public GUILogic(){
-		animations = new Vector<CAnimation>();
-		fadeanims = new Vector<CFade>();
+		animations = new ArrayList<CAnimation>();
+		fadeanims = new ArrayList<CFade>();
 		timer = new Timer(REFRESHRATE, this);
 	}
 	
@@ -37,30 +37,13 @@ public class GUILogic implements IConstantsUI, ActionListener{
 	 * Adding an item already being moved results in acceleration/decceleration
 	 * use length=0 for instant move
 	 */
-	public void moveRelative(CTargetAgent def, double dx, double dy, int length){
-		CAnimation anim = new CAnimation(def, dx, dy, length);
+	public void moveRelative(ACItem item, double dx, double dy, int length){
+		CAnimation anim = new CAnimation(item, dx, dy, length);
 		animations.add(anim);
 	}
 	
-	/**
-	 * Moves the item from A to B
-	 * Beware of bunching
-	 */
-	public void move(CTargetAgent def, double x0, double y0, double x1, double y1, int length){
-		moveTo(def, x0, y0);
-		moveRelative(def, x1-x0, y0-y1, length);
-	}
-	
-	public void moveTo(CTargetAgent def, double x, double y){
-		gui.moveTo(def, x, y);
-	}
-	
-	public void fade(CTargetAgent def, double x){
-		gui.opacChange(def, x);
-	}
-	
-	public void fading(CTargetAgent def, double dx, int length){
-		CFade anim = new CFade(def, dx, length);
+	public void fading(ACItem item, double dx, int length){
+		CFade anim = new CFade(item, dx, length);
 		fadeanims.add(anim);
 	}
 	
@@ -69,17 +52,17 @@ public class GUILogic implements IConstantsUI, ActionListener{
 	 * f(x)=1/(acc*x).
 	 * length describes the time in ms
 	 */
-	public void accFading(CTargetAgent def, double dx, int length, double accx){
-		LinkedBlockingQueue<CFade> cont = new LinkedBlockingQueue<CFade>();
+	public void accFading(ACItem item, double dx, int length, double accx){
+		ConcurrentLinkedQueue<CFade> cont = new ConcurrentLinkedQueue<CFade>();
 		CFade out = null;
 		double ix, tx = 0;
 		double cx = accx*dx/(Math.log(length+1));
 		for (int t=1; t <= length/REFRESHRATE; t++){
 			ix = cx/(accx*(t-0.5));
 			tx += ix;
-			cont.add(new CFade(def, ix, 1));
+			cont.add(new CFade(item, ix, 1));
 		}
-		out = new CFade(def, dx-tx, 1);
+		out = new CFade(item, dx-tx, 1);
 		out.continuation = cont;
 		fadeanims.add(out);
 	}
@@ -89,8 +72,8 @@ public class GUILogic implements IConstantsUI, ActionListener{
 	 * f(x)=1/(acc*x).
 	 * length describes the time in ms
 	 */
-	public void accMove(CTargetAgent def, double dx, double dy, int length, double accx, double accy){
-		LinkedBlockingQueue<CAnimation> cont = new LinkedBlockingQueue<CAnimation>();
+	public void accMove(ACItem item, double dx, double dy, int length, double accx, double accy){
+		ConcurrentLinkedQueue<CAnimation> cont = new ConcurrentLinkedQueue<CAnimation>();
 		CAnimation out = null;
 		double ix, iy, tx = 0, ty = 0;
 		double cx = accx*dx/(Math.log(length+1));
@@ -100,23 +83,47 @@ public class GUILogic implements IConstantsUI, ActionListener{
 			tx += ix;
 			iy = cy/(accy*(t-0.5));
 			ty += iy;
-			cont.add(new CAnimation(def, ix, iy, 1));
+			cont.add(new CAnimation(item, ix, iy, 1));
 		}
-		out = new CAnimation(def, dx-tx, dy-ty, 1);
+		out = new CAnimation(item, dx-tx, dy-ty, 1);
 		out.continuation = cont;
 		animations.add(out);
 	}
 	
 	/**
 	 * Creates a shaking motion with the item going in a random direction in a random amount.
-	 * The motion always stops at the object's original point.
-	 * jitterX and jitterY describes the maximum difference in each dx and dy element, with dx and dy being the minimum
+	 * maxdx and maxdy describes the maximum difference in each dx and dy element, with mindx and mindy being the minimum
 	 * and dx+randomness and dy+randomness being the maximum
-	 * length describes the number of shakes, not the time in ms.
+	 * length describes the number of shakes, not the time in ms. There is one movement per tickrate.
+	 * interval is the amount of time in ms that each interval takes
 	 * As is with the other animations, effect intensifies when overlapped.
 	 */
-	public void jitter(CTargetAgent def, double dx, double dy, double jitterX, double jitterY, int length){
-		LinkedBlockingQueue<CAnimation> cont = new LinkedBlockingQueue<CAnimation>();
+	public void destructiveJitter(ACItem item, double mindx, double mindy, double adddx, double adddy, int length, int interval){
+		ConcurrentLinkedQueue<CAnimation> cont = new ConcurrentLinkedQueue<CAnimation>();
+		int ix, iy; //displacement this shake
+		CAnimation out = null;
+		Random rng = new Random();
+		ix = 0;
+		iy = 0;
+		for(int i=0; i<length; i++){
+			ix = (int)(mindx + adddx*Math.random());
+			iy = (int)(mindy + adddy*Math.random());
+			if(rng.nextBoolean())
+				ix *= -1;
+			if(rng.nextBoolean())
+				iy *= -1;
+			cont.add(new CAnimation(item, ix, iy, interval));
+		}
+		out = cont.poll();
+		out.continuation = cont;
+		animations.add(out);
+	}
+	
+	/**
+	 * Non-destructive jitter
+	 */
+	public void jitter(ACItem item, double mindx, double mindy, double adddx, double adddy, int length, int interval){
+		ConcurrentLinkedQueue<CAnimation> cont = new ConcurrentLinkedQueue<CAnimation>();
 		int tx, ty; //total displacement
 		int ix, iy; //displacement this shake
 		CAnimation out = null;
@@ -125,23 +132,21 @@ public class GUILogic implements IConstantsUI, ActionListener{
 		ty = 0;
 		ix = 0;
 		iy = 0;
-		for(int i=0; i<length; i++){
-			ix = (int)(dx + jitterX*Math.random());
-			iy = (int)(dy + jitterY*Math.random());
+		for(int i=0; i<length/2; i++){
+			ix = (int)(mindx + adddx*Math.random());
+			iy = (int)(mindy + adddy*Math.random());
 			if(rng.nextBoolean())
 				ix *= -1;
 			if(rng.nextBoolean())
 				iy *= -1;
-			tx += ix;
-			ty += iy;
-			cont.add(new CAnimation(def, ix, iy, 0));
+			cont.add(new CAnimation(item, ix, iy, interval));
 		}
-		cont.add(new CAnimation(def, -1*tx, -1*ty, 0));
-		try {
-			out = cont.take();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		ConcurrentLinkedQueue<CAnimation> b = new ConcurrentLinkedQueue<CAnimation>();
+		for(CAnimation anim : cont){
+			b.add(new CAnimation(item, -1*anim.dx_left(), -1*anim.dy_left(), interval));
 		}
+		cont.addAll(b);
+		out = cont.poll();
 		out.continuation = cont;
 		animations.add(out);
 	}
@@ -152,19 +157,17 @@ public class GUILogic implements IConstantsUI, ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		{
-			Vector<CAnimation> next = new Vector<CAnimation>();
+			ArrayList<CAnimation> next = new ArrayList<CAnimation>();
 			Iterator<CAnimation> i = animations.iterator();
 			CAnimation iter;
 			while(i.hasNext()){
 				CAnimation anim = i.next();
 				anim.ticks++;
+				gui.getMasterNode().findChild(anim.item).moveRelative(anim.dx, anim.dy);
 				if(anim.ticks >= anim.target){
-					gui.translate(anim.def, anim.dx+anim.fx, anim.dy+anim.fy);
 					if((iter = anim.next()) != null)
 						next.add(iter);
 					i.remove(); //foreach loop does not support removal during loop
-				}else{
-					gui.translate(anim.def, anim.dx, anim.dy);
 				}
 			}
 			for(CAnimation anim : next){
@@ -172,19 +175,19 @@ public class GUILogic implements IConstantsUI, ActionListener{
 			}
 		}
 		{
-			Vector<CFade> next = new Vector<CFade>();
+			ArrayList<CFade> next = new ArrayList<CFade>();
 			Iterator<CFade> i = fadeanims.iterator();
 			CFade iter;
 			while(i.hasNext()){
 				CFade anim = i.next();
 				anim.ticks++;
 				if(anim.ticks >= anim.target){
-					gui.opacChange(anim.def, anim.dx+anim.fx);
+					gui.getMasterNode().findChild(anim.item).opacChange(anim.dx+anim.fx);
 					if((iter = anim.next()) != null)
 						next.add(iter);
 					i.remove(); //foreach loop does not support removal during loop
 				}else{
-					gui.opacChange(anim.def, anim.dx);
+					gui.getMasterNode().findChild(anim.item).opacChange(anim.dx);
 				}
 			}
 			for(CFade anim : next){

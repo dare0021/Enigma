@@ -11,6 +11,8 @@ public class CText extends ACItem{
 	public CText(CTextDef def, String name){
 		super(name);
 		init(def.text, def.x, def.y, def.text.length(), 0, def.color, def.font);
+		setOpacity(def.opacity);
+		setDepth(def.depth);
 	}
 	
 	private void init(String prompt, double x, double y, int length, int startat, Color fill, Font fnt){
@@ -21,8 +23,8 @@ public class CText extends ACItem{
 		text = prompt;
 		color = fill;
 		font = fnt;
-		opacity = 1;
 	}
 	
-	public Color getEffectiveColor() {return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha()*opacity));}
+	public Color getEffectiveColor(double groupOpacity) {return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha()*getOpacity()*groupOpacity));}
+	public Color getEffectiveColor() {return getEffectiveColor(1);}
 }

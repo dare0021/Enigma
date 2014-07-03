@@ -5,7 +5,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.ArrayList;
-import canvasItems.CTargetAgent;
+
+import canvasItems.CGroupNode;
 import jld.JLD;
 import jld.JldGetter;
 import jld.JldSetter;
@@ -68,23 +69,24 @@ public class ExampleLogic extends GUILogic implements KeyListener{
 	}
 
 	public void clickEvent(MouseEvent e, String actionCommand) {
-		CTargetAgent def = new CTargetAgent("", "testgrid", GROUP);
 		if(actionCommand == null)
 			return;
+		CGroupNode testgrid = (CGroupNode) gui.getMasterNode().findChild("testgrid");
 		switch (actionCommand){
 		case "GridTest Action":
-			//jitter(def, 20, 5, 20, 0, 20);
-			//moveRelative(def, 100, 0, 1000);
-			accMove(def, 100, 0, 1000, 1, 1);
+			//destructiveJitter(testgrid, 20, 5, 20, 0, 20, 50);
+			jitter(testgrid, 20, 5, 20, 0, 20, 50);
+			//moveRelative(testgrid, 100, 0, 1000);
+			//accMove(testgrid, 100, 0, 1000, 1, 1);
 			break;
 		case "GridTest Action Fade":
 			int dopac;
-			if(gui.retrieveItem(def).getOpacity() > 0)
+			if(testgrid.getOpacity() > 0)
 				dopac = -1;
 			else
 				dopac = 1;
-			//fading(def, dopac, 1000);
-			accFading(def, dopac, 1000, 1);
+			//fading(testgrid, dopac, 1000);
+			accFading(testgrid, dopac, 1000, 1);
 		}
 	}
 

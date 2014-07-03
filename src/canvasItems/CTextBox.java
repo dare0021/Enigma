@@ -33,9 +33,10 @@ public class CTextBox extends ACItem implements ActionListener{
 		super(name);
 		bgimage = def.bgimage;
 		hoverimage = def.hoverimage;
-		field = new CText(new CTextDef("", def.x, def.y, def.color, def.font), name+".field");
-		field.setOpacity(def.opacity);
+		field = new CText(new CTextDef("", def.x, def.y, def.color, def.font, def.opacity, def.depth), name+".field");
+		field.moveForward();
 		setOpacity(def.opacity);
+		setDepth(def.depth);
 		actionCommand = null;
 		enabled = true;
 		focus = false;

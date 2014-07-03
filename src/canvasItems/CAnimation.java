@@ -1,6 +1,6 @@
 package canvasItems;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import enigma.IConstantsUI;
 
@@ -8,26 +8,26 @@ import enigma.IConstantsUI;
  * Contains the instructions for an animation
  */
 public class CAnimation implements IConstantsUI{
-	public CTargetAgent def;
-	public double dx, dy, fx, fy;
+	public ACItem item;
+	public double dx, dy;
 	public int ticks, target;
-	public LinkedBlockingQueue<CAnimation> continuation;
+	public ConcurrentLinkedQueue<CAnimation> continuation;
 	
 	/**
 	 * length is time in ms
 	 */
-	public CAnimation(CTargetAgent def, double _dx, double _dy, int length){
-		init(def, _dx, _dy, length, null);
-	}public CAnimation(CTargetAgent def, double _dx, double _dy, int length, CAnimation cont){
-		LinkedBlockingQueue<CAnimation> q = new LinkedBlockingQueue<CAnimation>();
+	public CAnimation(ACItem item, double _dx, double _dy, int length){
+		init(item, _dx, _dy, length, null);
+	}public CAnimation(ACItem item, double _dx, double _dy, int length, CAnimation cont){
+		ConcurrentLinkedQueue<CAnimation> q = new ConcurrentLinkedQueue<CAnimation>();
 		q.add(cont);
-		init(def, _dx, _dy, length, q);
-	}public CAnimation(CTargetAgent def, double _dx, double _dy, int length, LinkedBlockingQueue<CAnimation> cont){
-		init(def, _dx, _dy, length, cont);
+		init(item, _dx, _dy, length, q);
+	}public CAnimation(ACItem item, double _dx, double _dy, int length, ConcurrentLinkedQueue<CAnimation> cont){
+		init(item, _dx, _dy, length, cont);
 	}
 	
-	private void init(CTargetAgent _def, double _dx, double _dy, int length, LinkedBlockingQueue<CAnimation> cont){
-		def = _def;
+	private void init(ACItem _item, double _dx, double _dy, int length, ConcurrentLinkedQueue<CAnimation> cont){
+		item = _item;
 		ticks = 0;
 		target = length / REFRESHRATE;
 		if(target<1)target=1;
@@ -42,14 +42,20 @@ public class CAnimation implements IConstantsUI{
 			return null;
 		}
 		CAnimation out = null;
-		try {
-			if(continuation.peek() == null)
-				return null;
-			out = continuation.take();
-			out.continuation = continuation;
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		if(continuation.peek() == null)
+			return null;
+		out = continuation.poll();
+		out.continuation = continuation;
 		return out;
+	}
+	
+	/**
+	 * Returns the amount of movement to be done
+	 */
+	public double dx_left(){
+		return dx*(target-ticks);
+	}
+	public double dy_left(){
+		return dy*(target-ticks);
 	}
 }

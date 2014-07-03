@@ -18,9 +18,9 @@ public interface ICShape extends ICItem {
 	public double getWidth();
 	public double getHeight();
 	public double getThickness();
-	public Color getStroke();
+	public Color getStroke(double groupOpacity);
 	public Color getRawStroke();
-	public Color getFill();
+	public Color getFill(double groupOpacity);
 	public Color getRawFill();
 	
 	public void setX1(double x1);

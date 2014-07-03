@@ -10,8 +10,8 @@ public abstract class ACShape extends ACItem implements ICShape {
 		super(name);
 	}
 	
-	private Color getEffective(Color color){
-		return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha()*getOpacity()));
+	private Color getEffective(Color color, double groupOpacity){
+		return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha()*getOpacity()*groupOpacity));
 	}
 
 	public double getX0() {return x0;}
@@ -22,9 +22,9 @@ public abstract class ACShape extends ACItem implements ICShape {
 	public double getHeight() {return y1-y0;}
 	public double getThickness() {return thickness;}
 	public Color getRawStroke() {return stroke;}
-	public Color getStroke() {return getEffective(getRawStroke());}
+	public Color getStroke(double groupOpacity) {return getEffective(getRawStroke(), groupOpacity);}
 	public Color getRawFill() {return fill;}
-	public Color getFill() {return getEffective(getRawFill());}
+	public Color getFill(double groupOpacity) {return getEffective(getRawFill(), groupOpacity);}
 
 	public void setX0(double x) {x0 = x;}
 	public void setY0(double y) {y0 = y;}

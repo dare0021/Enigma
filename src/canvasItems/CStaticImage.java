@@ -28,9 +28,10 @@ public class CStaticImage extends ACItem{
 		y0 = def.y;
 		width = def.width;
 		height = def.height;
-		opacity = (float) def.opacity;
 		xScale = 1;
 		yScale = 1;
+		setOpacity((float) def.opacity);
+		setDepth(def.depth);
 		setFile(def.address);
 	}protected CStaticImage(CImageDef def, int currentFrame, String name){
 		super(name);
@@ -38,9 +39,10 @@ public class CStaticImage extends ACItem{
 		y0 = def.y;
 		width = def.width;
 		height = def.height;
-		opacity = (float) def.opacity;
 		xScale = 1;
 		yScale = 1;
+		setOpacity((float) def.opacity);
+		setDepth(def.depth);
 		setFile(def.address + currentFrame + ".png");
 	}
 	

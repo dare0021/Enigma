@@ -123,6 +123,7 @@ public class JldGetter implements IJLDGlobalFinals {
 		connection.disconnect();
 	}
 	
+//Removed to move to use jar friendly getResourceStream instead 
 //	private File openFile(String url){
 //		File f = null;
 //		try {
@@ -158,6 +159,9 @@ public class JldGetter implements IJLDGlobalFinals {
 							if(raw.charAt(0) == '"'){ //new single item value
 								val = stringBetween(raw, '"');
 								raw = stringAfter(raw, '"');
+							}else if(raw.charAt(0) == '\''){ //new single item value in single quotes
+								val = stringBetween(raw, '\'');
+								raw = stringAfter(raw, '\'');
 							}else if(raw.charAt(0) == '['){ //new list value
 								val = parseList(stringBetween(raw, '[', ']'));
 								raw = stringAfter(raw, '[', ']');
@@ -178,6 +182,15 @@ public class JldGetter implements IJLDGlobalFinals {
 							key = stringBetween(raw, '"');
 							raw = raw.substring(1);
 							raw = raw.substring(raw.indexOf('"')+1);
+							nextIsVal = true;
+						}else{
+							throw new BadStringOperationException("Malformed JLD: parser expected a key");
+						}
+					}else if(raw.charAt(0) == '\''){
+						if(!nextIsVal){ //new key in single quotes
+							key = stringBetween(raw, '\'');
+							raw = raw.substring(1);
+							raw = raw.substring(raw.indexOf('\'')+1);
 							nextIsVal = true;
 						}else{
 							throw new BadStringOperationException("Malformed JLD: parser expected a key");
@@ -214,6 +227,9 @@ public class JldGetter implements IJLDGlobalFinals {
 			if(raw.charAt(0) == '"'){
 				out.add(stringBetween(raw, '"'));
 				raw = stringAfter(raw, '"');
+			}else if(raw.charAt(0) == '\''){
+				out.add(stringBetween(raw, '\''));
+				raw = stringAfter(raw, '\'');
 			}else if(raw.charAt(0) == '['){
 				out.add(parseList(stringBetween(raw, '[', ']')));
 				raw = stringAfter(raw, '[', ']');
@@ -296,8 +312,8 @@ public class JldGetter implements IJLDGlobalFinals {
 		return raw.substring(sub.length());
 	}
 	private String stringAfter(String raw, char c) throws IndexOutOfBoundsException{
-		int i = raw.indexOf('"');
-		for(i++; raw.charAt(i)!='"'; i++)
+		int i = raw.indexOf(c);
+		for(i++; raw.charAt(i)!=c; i++)
 			;
 		return raw.substring(i+1);
 	}

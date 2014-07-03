@@ -25,7 +25,6 @@ public class CRoundRect extends ACShape {
 		setThickness(strokewidth);
 		setArcWidth(roundwidth);
 		setArcHeight(roundheight);
-		setOpacity(1);
 	}
 	
 	public Shape getShape(){

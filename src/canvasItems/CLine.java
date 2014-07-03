@@ -22,14 +22,13 @@ public class CLine extends ACShape{
 		setY1(yTo);
 		setStroke(fill);
 		setThickness(stroke);
-		setOpacity(1);
 	}
 	
 	public Shape getShape(){
 		return new Line2D.Double(getX(), getY(), getX1(), getY1());
 	}
 
-	public Color getFill() {return getStroke();}
+	public Color getFill(double groupOpacity) {return getStroke(groupOpacity);}
 	public Color getRawFill() {return getRawStroke();}
 	public void setFill(Color s) {setStroke(s);}
 }

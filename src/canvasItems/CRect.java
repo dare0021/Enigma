@@ -21,7 +21,6 @@ public class CRect extends ACShape {
 		setStroke(strokecolor);
 		setFill(fillcolor);
 		setThickness(strokewidth);
-		setOpacity(1);
 	}
 	
 	public Shape getShape(){

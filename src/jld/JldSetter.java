@@ -45,7 +45,11 @@ public class JldSetter implements IJLDGlobalFinals {
 		out.add(indent(layer) + "{");
 		layer++;
 		for(String key : raw.keySet()){
-			st = indent(layer) + "\"" + key + "\" : ";
+			st = indent(layer);
+			if(key.contains("\""))
+				st += "'" + key + "' : ";
+			else
+				st += "\"" + key + "\" : ";
 			Object val = raw.get(key);
 			if(val instanceof ArrayList){
 				st += parseArrayList((ArrayList)val, layer+1);
@@ -61,6 +65,8 @@ public class JldSetter implements IJLDGlobalFinals {
 				out.add(st);
 				st = out.get(out.size()-1) + ",";
 				out.remove(out.size()-1);
+			}else if(val.toString().contains("\"")){
+				st += "'" + val + "',";
 			}else{
 				st += "\"" + val + "\",";
 			}
@@ -101,7 +107,10 @@ public class JldSetter implements IJLDGlobalFinals {
 					out += ", ";
 				else
 					first = false;
-				out += "\"" + val + "\"";
+				if(val.toString().contains("\""))
+					out += "'" + val + "'";
+				else
+					out += "\"" + val + "\"";
 			}
 		}
 		return out+"]";
@@ -110,10 +119,10 @@ public class JldSetter implements IJLDGlobalFinals {
 	private void saveFile(String url, ArrayList<String> raw){
 		File f = null;
 		f = new File(default_dir+url);
-		f.mkdirs();
 		try {
 			while(!f.createNewFile()){ //if already present
 				f.delete();
+				f.mkdirs();
 				System.out.println("File "+url+" already present. Attempting deletion.");
 			}
 		} catch (IOException e) {

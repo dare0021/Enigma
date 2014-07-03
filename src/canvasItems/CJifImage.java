@@ -25,11 +25,11 @@ public class CJifImage extends CStaticImage implements ActionListener{
 	
 	public CJifImage(CImageDef def, double fps, int n, String name){
 		super(def, 0, name);
-		init(def.address, fps, n, 0, 0, n-1);
+		init(def.address, def.depth, fps, n, 0, 0, n-1);
 	}public CJifImage(CImageDef def,  double fps, int n, int start, int current, int end, String name){
 		super(def, current, name);
-		init(def.address, fps, n, start, current, end);
-	}private void init(String url, double fps, int n, int start, int current, int end){
+		init(def.address, def.depth, fps, n, start, current, end);
+	}private void init(String url, double z, double fps, int n, int start, int current, int end){
 		if(start > end){
 			int temp = end;
 			end = start;
@@ -52,6 +52,7 @@ public class CJifImage extends CStaticImage implements ActionListener{
 		deleting = false;
 		isDone = false;
 		timer = new Timer((int)(1000/fps), this);
+		setDepth(z);
 	}private void printError(String what, String autocorrect){
 		new Exception().printStackTrace();
 		System.out.println("ERR: " + what);
@@ -111,13 +112,13 @@ public class CJifImage extends CStaticImage implements ActionListener{
 	 */
 	public void setAddress(String url){
 		setFile(url + "0.png"); 
-		init(url, 0, 1, 0, 0, 0);
+		init(url, getDepth(), 0, 1, 0, 0, 0);
 	}public void setAddress(String url, double fps, int n){
 		setFile(url + "0.png");
-		init(url, fps, n, 0, 0, n-1);
+		init(url, getDepth(), fps, n, 0, 0, n-1);
 	}public void setAddress(String url, double fps, int n, int start, int current, int end){
 		setFile(url + current + ".png");		
-		init(url, fps, n, start, current, end);
+		init(url, getDepth(), fps, n, start, current, end);
 	}
 	
 	public void start(){timer.start();}

@@ -25,7 +25,6 @@ public class CButton extends ACItem{
 		super(name);
 		x0 = def.x;
 		y0 = def.y;
-		opacity = def.opacity;
 		x1 = x0 + def.width;
 		y1 = y0 + def.height;
 		bgimage = def.bgimage;
@@ -35,6 +34,8 @@ public class CButton extends ACItem{
 		showHover = false;
 		showClicked = false;
 		enabled = true;
+		setOpacity(def.opacity);
+		setDepth(def.depth);
 	}
 	
 	public CStaticImage getImage(){

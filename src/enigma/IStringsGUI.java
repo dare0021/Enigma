@@ -1,6 +1,8 @@
 package enigma;
 
 public interface IStringsGUI {
+	public final String MASTERNODE_DESC = "MasterNode";
+	
 	public final String ANIMATION_DESC 	= "Animation"; 
 	public final String BUTTON_DESC 	= "Button"; 
 	public final String TEXTBOX_DESC	= "Textbox";
@@ -11,4 +13,5 @@ public interface IStringsGUI {
 	public final String ROUNDRECT_DESC 	= "Roundrect"; 
 	public final String STATICIMAGE_DESC= "Staticimage"; 
 	public final String TEXT_DESC 		= "Text";
+	public final String GROUPNODE_DESC  = "GroupNode";
 }

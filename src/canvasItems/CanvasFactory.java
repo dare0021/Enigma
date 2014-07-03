@@ -16,9 +16,12 @@ import java.awt.Font;
  */
 
 public class CanvasFactory{
-	public CanvasFactory(){}
+	public CanvasFactory(){
+		opacity = 1;
+		depth = 0;
+	}
 	
-	public double width, height, x, y, opacity;
+	public double width, height, x, y, opacity, depth;
 	public Color fillColor;
 	public Font font;
 	public String msg;
@@ -29,8 +32,8 @@ public class CanvasFactory{
 	public void setLocation(double xpos, double ypos){x = xpos; y = ypos;}
 	public void setSize(double w, double h){width = w; height = h;}
 	
-	public CTextDef createTextDef(){return new CTextDef(msg, x, y, fillColor, font);}
-	public CImageDef createImageDef(){return new CImageDef(url, x, y, width, height, opacity);}
-	public CButtonDef createButtonDef(){return new CButtonDef(x, y, width, height, opacity, bgimage, hoverimage, clickimage);}
-	public CTextBoxDef createTextBoxDef(){return new CTextBoxDef(x, y, width, height, opacity, bgimage, hoverimage, font, fillColor, length);}
+	public CTextDef createTextDef(){return new CTextDef(msg, x, y, fillColor, font, opacity, depth);}
+	public CImageDef createImageDef(){return new CImageDef(url, x, y, width, height, opacity, depth);}
+	public CButtonDef createButtonDef(){return new CButtonDef(x, y, width, height, opacity, depth, bgimage, hoverimage, clickimage);}
+	public CTextBoxDef createTextBoxDef(){return new CTextBoxDef(x, y, width, height, opacity, depth, bgimage, hoverimage, font, fillColor, length);}
 }
