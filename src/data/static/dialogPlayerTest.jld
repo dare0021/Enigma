@@ -1,0 +1,26 @@
+{
+	"name" 	: "DialogTestSeq",
+	"bg"	: "Dialog Test/bg.png",
+	"frame"	: "Dialog Test/dialog.png",
+	"font"	: "맑은 고딕",
+	"size"	: "20",
+	"style"	: "1",
+	"fill"	: ["255", "255", "255", "255"],
+	"stroke": ["0", "0", "0", "255"],
+	"thickness" : "2",
+	"boxes" : 	[{
+				"charName"		 : "boy♂",
+				"content"		 : "누구세요?",
+				"charHeight"	 : "-100",
+				"contentOffsetX" : "10",
+				"contentOffsetY" : "230",
+				"charNameOffsetX": "10",
+				"charNameOffsetY": "210",
+				"character"		 : "Dialog Test/boySmall.png"
+				},
+				{
+				"charName"		 : "ヴァン",
+				"content"		 : "촉촉하게 만들어주지!",
+				"character"		 : "Dialog Test/dak.png"
+				}]
+}

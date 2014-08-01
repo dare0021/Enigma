@@ -4,27 +4,32 @@ import java.awt.Font;
 
 public class CText extends ACItem{
 	public int len, offset;
+	public double strokeThickness;
 	public String text;
-	public Color color;
+	public Color fillColor, strokeColor;
 	public Font font;
 	
 	public CText(CTextDef def, String name){
 		super(name);
-		init(def.text, def.x, def.y, def.text.length(), 0, def.color, def.font);
+		init(def.text, def.x, def.y, def.text.length(), 0, def.fillColor, def.strokeColor, def.strokeThickness, def.font);
 		setOpacity(def.opacity);
 		setDepth(def.depth);
 	}
 	
-	private void init(String prompt, double x, double y, int length, int startat, Color fill, Font fnt){
+	private void init(String prompt, double x, double y, int length, int startat, Color fill, Color stroke, double thickness, Font fnt){
 		x0 = x;
 		y0 = y;
 		len = length;
 		offset = startat;
 		text = prompt;
-		color = fill;
+		fillColor = fill;
+		strokeColor = stroke;
+		strokeThickness = thickness;
 		font = fnt;
 	}
 	
-	public Color getEffectiveColor(double groupOpacity) {return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha()*getOpacity()*groupOpacity));}
-	public Color getEffectiveColor() {return getEffectiveColor(1);}
+	public Color getEffectiveFill(double groupOpacity) {return new Color(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), (int)(fillColor.getAlpha()*getOpacity()*groupOpacity));}
+	public Color getEffectiveFill() {return getEffectiveFill(1);}
+	public Color getEffectiveStroke(double groupOpacity) {return new Color(strokeColor.getRed(), strokeColor.getGreen(), strokeColor.getBlue(), (int)(strokeColor.getAlpha()*getOpacity()*groupOpacity));}
+	public Color getEffectiveStroke() {return getEffectiveStroke(1);}
 }

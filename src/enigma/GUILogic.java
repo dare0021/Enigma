@@ -8,6 +8,9 @@ package enigma;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.ArrayList;
@@ -17,9 +20,10 @@ import javax.swing.Timer;
 
 import canvasItems.ACItem;
 import canvasItems.CAnimation;
+import canvasItems.CDialogBox;
 import canvasItems.CFade;
 
-public class GUILogic implements IConstantsUI, ActionListener{
+public class GUILogic implements IConstantsUI, ActionListener, KeyListener{
 	GUIcanvas gui;
 	Timer timer;
 	ArrayList<CAnimation> animations;
@@ -182,7 +186,11 @@ public class GUILogic implements IConstantsUI, ActionListener{
 				CFade anim = i.next();
 				anim.ticks++;
 				if(anim.ticks >= anim.target){
-					gui.getMasterNode().findChild(anim.item).opacChange(anim.dx+anim.fx);
+					ACItem target = gui.getMasterNode().findChild(anim.item);
+					if(target == null){
+						continue;
+					}
+					target.opacChange(anim.dx+anim.fx);
 					if((iter = anim.next()) != null)
 						next.add(iter);
 					i.remove(); //foreach loop does not support removal during loop
@@ -198,5 +206,28 @@ public class GUILogic implements IConstantsUI, ActionListener{
 		gui.repaint(); //draws on top of everything else
 		gui.requestFocusInWindow();
 	}
+	
+	public void dialogEvent(CDialogBox e) {}
 
+	public void clickEvent(MouseEvent e, String actionCommand) {}
+	
+	public void dragEvent(MouseEvent e) {}
+
+	@Override
+	public void keyPressed(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }

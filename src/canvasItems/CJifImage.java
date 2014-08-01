@@ -15,11 +15,13 @@ import javax.swing.Timer;
  * FrameTotal is cardinal (starts at 1) while all others are from 0
  */
 public class CJifImage extends CStaticImage implements ActionListener{
+	public enum RoundBehavior {REPEAT, STOP, DELETE}
 	private double framesPerSecond;
 	private int framesTotal, frameStart, frameCurrent, frameEnd;
 	private Timer timer;
 	private String addressroot;
-	private boolean deleteWhenDone, isDone;
+	private boolean toBeRemoved;
+	private RoundBehavior roundBehavior;
 	
 	private boolean deleting; //Not a publically available member
 	
@@ -48,9 +50,9 @@ public class CJifImage extends CStaticImage implements ActionListener{
 		frameStart = start;
 		frameCurrent = current;
 		frameEnd = end;
-		deleteWhenDone = false;
+		roundBehavior = RoundBehavior.REPEAT;
 		deleting = false;
-		isDone = false;
+		toBeRemoved = false;
 		timer = new Timer((int)(1000/fps), this);
 		setDepth(z);
 	}private void printError(String what, String autocorrect){
@@ -64,8 +66,8 @@ public class CJifImage extends CStaticImage implements ActionListener{
 	public int getStartFrame(){return frameStart;}
 	public int getCurrentFrame(){return frameCurrent;}
 	public int getEndFrame(){return frameEnd;}
-	public boolean getDeleteWhenDone(){return deleteWhenDone;}
-	public boolean isDone(){return isDone;}
+	public RoundBehavior getRoundBehavior(){return roundBehavior;}
+	public boolean toBeRemoved(){return toBeRemoved;}
 	
 	public void setFPS(double fps){
 		framesPerSecond = fps;
@@ -103,8 +105,8 @@ public class CJifImage extends CStaticImage implements ActionListener{
 		}
 		frameEnd = end;
 	}
-	public void setDeleteWhenDone(boolean b){
-		deleteWhenDone = b;
+	public void setRoundBehavior(RoundBehavior b){
+		roundBehavior = b;
 	}
 	@Override
 	/**
@@ -128,17 +130,28 @@ public class CJifImage extends CStaticImage implements ActionListener{
 		super.setAddress(addressroot + frameCurrent + ".png");
 		frameCurrent++;
 		if(frameCurrent > frameEnd){
-			if(deleteWhenDone){
+			switch (roundBehavior){
+			case DELETE:
 				if(deleting){
-					isDone = true;
+					toBeRemoved = true;
 					stop();
 					setOpacity(0);
 				}else{
 					frameCurrent--;
 					deleting = true;
 				}
-			}else{
+				break;
+			case STOP:
+				stop();
+				frameCurrent--;
+				break;
+			case REPEAT:
 				frameCurrent = frameStart;
+				break;
+			default:
+				printError("Unhandled roundBehavior", "Stopping");
+				stop();
+				break;
 			}
 		}
 	}

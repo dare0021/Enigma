@@ -3,7 +3,7 @@ package canvasItems;
 import java.awt.Color;
 
 public abstract class ACShape extends ACItem implements ICShape {
-	double x1, y1, thickness;
+	protected double x1, y1, thickness;
 	Color fill, stroke;
 
 	protected ACShape(String name) {
@@ -14,8 +14,6 @@ public abstract class ACShape extends ACItem implements ICShape {
 		return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha()*getOpacity()*groupOpacity));
 	}
 
-	public double getX0() {return x0;}
-	public double getY0() {return y0;}
 	public double getX1() {return x1;}
 	public double getY1() {return y1;}
 	public double getWidth() {return x1-x0;}

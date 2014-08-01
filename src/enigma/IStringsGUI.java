@@ -13,5 +13,8 @@ public interface IStringsGUI {
 	public final String ROUNDRECT_DESC 	= "Roundrect"; 
 	public final String STATICIMAGE_DESC= "Staticimage"; 
 	public final String TEXT_DESC 		= "Text";
+	public final String DIALOGBOX_DESC  = "DialogBox";
+	public final String DIALOGSEQ_DESC  = "DialogSequence";
+	public final String DIALOGOPT_DESC  = "DialogOptions";
 	public final String GROUPNODE_DESC  = "GroupNode";
 }

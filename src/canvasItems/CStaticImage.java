@@ -10,7 +10,7 @@ package canvasItems;
  * they will, however, clip the image
  */
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -18,48 +18,49 @@ import java.net.URISyntaxException;
 import javax.imageio.ImageIO;
 
 public class CStaticImage extends ACItem{
-	public double width, height, xScale, yScale;
-	public Image image;
+	public double xScale, yScale;
+	public BufferedImage image;
 	private String address;
 	
 	public CStaticImage(CImageDef def, String name){
 		super(name);
 		x0 = def.x;
 		y0 = def.y;
-		width = def.width;
-		height = def.height;
-		xScale = 1;
-		yScale = 1;
 		setOpacity((float) def.opacity);
 		setDepth(def.depth);
 		setFile(def.address);
+		if(def.width < 0 && def.height < 0){
+			xScale = yScale = 1;
+			return;
+		}
+		xScale = def.width / image.getWidth();
+		yScale = def.height/ image.getHeight();
 	}protected CStaticImage(CImageDef def, int currentFrame, String name){
 		super(name);
 		x0 = def.x;
 		y0 = def.y;
-		width = def.width;
-		height = def.height;
-		xScale = 1;
-		yScale = 1;
 		setOpacity((float) def.opacity);
 		setDepth(def.depth);
 		setFile(def.address + currentFrame + ".png");
+		if(def.width < 0 && def.height < 0){
+			xScale = yScale = 1;
+			return;
+		}
+		xScale = def.width / image.getWidth();
+		yScale = def.height/ image.getHeight();
 	}
 	
 	protected void setFile(String url){
 		File f = null;
 		String errprompt = url;
 		try {
-			f = new File(getClass().getResource("/enigma/images/"+url).toURI());
+			f = new File(getClass().getResource("/images/"+url).toURI());
+			
 			address = url;
 		}catch (Exception e){
 			e.printStackTrace();
 			try {
-				f = new File(getClass().getResource("/enigma/images/dummy.png").toURI());
-				xScale = width/100;
-				yScale = height/100;
-				width = 100;
-				height = 100;
+				f = new File(getClass().getResource("/images/dummy.png").toURI());
 				address = null;
 				System.out.println("No such file: "+errprompt);
 				System.out.println("ERR handled by inserting dummy image");
@@ -76,8 +77,12 @@ public class CStaticImage extends ACItem{
 		}
 	}
 	
-	public double getEffectiveX1(){return x0 + width*xScale;}
-	public double getEffectiveY1(){return y0 + height*yScale;}
+	public double getRawWidth(){return image.getWidth();}
+	public double getRawHeight(){return image.getHeight();}
+	public double getEffectiveWidth(){return getRawWidth()*xScale;}
+	public double getEffectiveHeight(){return getRawHeight()*yScale;}
+	public double getEffectiveX1(){return x0 + getEffectiveWidth();}
+	public double getEffectiveY1(){return y0 + getEffectiveHeight();}
 	public String getAddress(){return address;}
 	public double getXscale(){return xScale;}
 	public double getYscale(){return yScale;}
@@ -89,4 +94,15 @@ public class CStaticImage extends ACItem{
 	public void setAddress(String url){setFile(url);}
 	public void setXscale(double xs){xScale = xs;}
 	public void setYscale(double ys){yScale = ys;}
+
+	/**
+	 * Moves the image as if its anchor is on its top left
+	 * even if that is not true because scale < 0
+	 */
+	public void negativeScaleNormalize(){
+			if(xScale < 0)
+				moveRelative(-1*getEffectiveX1(), 0);
+			if(yScale < 0)
+				moveRelative(0, -1*getEffectiveY1());
+	}
 }

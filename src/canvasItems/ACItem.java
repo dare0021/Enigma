@@ -10,12 +10,13 @@ import enigma.IConstantsUI;
  */
 public abstract class ACItem implements ICItem, Comparable<ACItem>, IConstantsUI{
 	public final String name;
-	private final double threshold = OPACITY_THRESHOLD;
+	private final double opacity_threshold = OPACITY_THRESHOLD;
+	private final double depth_threshold = DEPTH_THRESHOLD;
 	private final double z_increment = DEPTH_INCREMENT;
 	private final int z_polarity = DEPTH_FROM_SCREEN ? 1 : -1;
 	private double depth, opacity;
 	public CGroupNode parent;
-	public double x0, y0;
+	protected double x0, y0;
 	protected ECItemType type;
 	
 	protected ACItem(String _name){
@@ -37,14 +38,20 @@ public abstract class ACItem implements ICItem, Comparable<ACItem>, IConstantsUI
 	/** 
 	 * Slightly increases depth
 	 */
-	public void moveForward(){setDepth(getDepth() + z_increment * z_polarity);}
-	public void moveBackward(){setDepth(getDepth() - z_increment * z_polarity);}
+	public void moveForward(){setDepth(getDepth() + z_increment * z_polarity);} 
+	/** performs moveForward int times 
+	  * negative values count as moveBackward */
+	public void moveForward(int i){setDepth(getDepth() + z_increment * z_polarity * i);}/** Slightly decreases depth */
+	public void moveBackward(){setDepth(getDepth() - z_increment * z_polarity);} 
+	/** performs moveBackward int times 
+	  * negative values count as moveForward */
+	public void moveBackward(int i){setDepth(getDepth() - z_increment * z_polarity * i);}
 	
 	public double getOpacity(){return opacity;}
 	public void setOpacity(double o) {
-		if(o<threshold)
+		if(o<opacity_threshold)
 			o = 0;
-		else if(o>1-threshold)
+		else if(o>1-opacity_threshold)
 			o = 1;
 		opacity = o;
 	}
@@ -71,6 +78,12 @@ public abstract class ACItem implements ICItem, Comparable<ACItem>, IConstantsUI
 			return ECItemType.ROUNDRECT;
 		}else if(comp instanceof CTextBox){
 			return ECItemType.TEXTBOX;
+		}else if(comp instanceof CDialogBox){
+			return ECItemType.DIALOGBOX;
+		}else if(comp instanceof CDialogSeq){
+			return ECItemType.DIALOGSEQ;
+		}else if(comp instanceof CDialogOpt){
+			return ECItemType.DIALOGOPT;
 		}else if(comp instanceof CGroupNode){
 			return ECItemType.GROUPNODE;
 		}else{
@@ -88,18 +101,34 @@ public abstract class ACItem implements ICItem, Comparable<ACItem>, IConstantsUI
 		setY(ty);
 	}
 	
+	/**
+	 * Takes the current coordinates and
+	 * reassigns them by adding the parent's coordinates
+	 * thus allowing an instance to be created with
+	 * relative coordinates.
+	 * Depth is missing as depth is always relative 
+	 * within a group.
+	 */
+	public void resolveRelativeCoord(){
+		setX(parent.getX()+getX());
+		setY(parent.getY()+getY());
+	}
+	
 	public void opacChange(double dx){
 		setOpacity(getOpacity()+dx);
 	}
 	
 	/**
-	 * Uses an offset of 1 from the zero to prevent ((int)(0.xxxx == 0))
+	 * Uses an offset of 1 from the zero to prevent ((int)0.xxxx) == 0
 	 */
+	@Override
 	public int compareTo(ACItem b){
-		double diff = this.getDepth()-b.getDepth();
-		if(diff > 0)
+		if(b == null)
+			return 1; //Java internal tests includes compareTo(null) is int
+		double diff = (this.getDepth()-b.getDepth())*z_polarity;
+		if(diff > depth_threshold/2)
 			return ((int)diff)+1;
-		else if(diff < 0)
+		else if(diff < -1*depth_threshold/2)
 			return ((int)diff)-1;
 		else
 			return 0;

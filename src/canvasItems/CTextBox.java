@@ -33,7 +33,7 @@ public class CTextBox extends ACItem implements ActionListener{
 		super(name);
 		bgimage = def.bgimage;
 		hoverimage = def.hoverimage;
-		field = new CText(new CTextDef("", def.x, def.y, def.color, def.font, def.opacity, def.depth), name+".field");
+		field = new CText(new CTextDef("", def.x, def.y, def.textColor, def.textStroke, def.strokeThickness, def.font, def.opacity, def.depth), name+".field");
 		field.moveForward();
 		setOpacity(def.opacity);
 		setDepth(def.depth);
@@ -102,7 +102,7 @@ public class CTextBox extends ACItem implements ActionListener{
 	
 	//field vars
 	public Font getFont(){return field.font;}
-	public Color getRawColor(){return field.color;}
+	public Color getRawColor(){return field.fillColor;}
 	public int getOffset(){return field.offset;}
 	public int getLength(){return getText().length();}
 	public double getTextX(){return getX0() + xmargin;}
@@ -111,7 +111,7 @@ public class CTextBox extends ACItem implements ActionListener{
 	public String getText(){return field.text+(cursorVisible?"|":"");}
 	
 	public void setFont(Font font){field.font = font;}
-	public void setRawColor(Color color){field.color = color;}
+	public void setRawColor(Color color){field.fillColor = color;}
 	public void setOffset(int o){field.offset = o;}
 	public void setText(String txt){
 		if(txt.length() <= getMaxLength())
@@ -122,7 +122,7 @@ public class CTextBox extends ACItem implements ActionListener{
 	}
 	
 	public Color getEffectiveColor(){
-		return new Color(field.color.getRed(), field.color.getGreen(), field.color.getBlue(), (int)(field.color.getAlpha()*getOpacity()));
+		return new Color(field.fillColor.getRed(), field.fillColor.getGreen(), field.fillColor.getBlue(), (int)(field.fillColor.getAlpha()*getOpacity()));
 	}
 	
 	//Key Event

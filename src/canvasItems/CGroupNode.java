@@ -8,6 +8,8 @@ import java.util.Collections;
  * depth, grouping, search, scene management, etc
  * 
  * The group's location is that of its AABB
+ * Location (all x, y, z) is computed each request instead of being stored
+ * Size is stored, but should recompute as necessary
  * 
  * All behavior is in BFS
  */
@@ -34,10 +36,13 @@ public class CGroupNode extends ACItem {
 		for (ACItem node : nodes)
 			this.addChild(node, false);
 		recount();
-	}public void addChildren(ArrayList<ACItem> nodes){
+		Collections.sort(children);
+	}/** More efficient computation time wise compared to a sequence of individual addChild() */
+	public void addChildren(ArrayList<ACItem> nodes){
 		for (ACItem node : nodes)
 			this.addChild(node, false);
 		recount();
+		Collections.sort(children);
 	}
 	
 	public ACItem findChild(ACItem toFind){
@@ -148,10 +153,12 @@ public class CGroupNode extends ACItem {
 	 * Note that this is used for sorting as well
 	 */
 	public double getDepth(){
-		double out = Double.MAX_VALUE;
+		double out = DEPTH_FROM_SCREEN?-1*Double.MAX_VALUE:Double.MAX_VALUE;
 		for (ACItem iter : children)
-			if(iter.getDepth() < out)
-				out = iter.getDepth();
+			if(DEPTH_FROM_SCREEN)
+				out = Math.max(out, iter.getDepth());
+			else
+				out = Math.min(out, iter.getDepth());
 		return out;
 	}
 	
@@ -177,33 +184,6 @@ public class CGroupNode extends ACItem {
 		for (ACItem iter : children){
 			iter.setDepth(iter.getDepth()+dz);
 		}
-	}
-	
-	@Override
-	public void moveForward(){
-		for (ACItem iter : children){
-			iter.moveForward();
-		}
-	}
-	
-	@Override
-	public void moveBackward(){
-		for (ACItem iter : children){
-			iter.moveBackward();
-		}
-	}
-	
-	@Override
-	public void moveRelative(double dx, double dy){
-		for (ACItem iter : children){
-			iter.moveRelative(dx, dy);
-		}
-	}
-	
-	@Override
-	public void moveTo(double tx, double ty){
-		this.setX(tx);
-		this.setY(ty);
 	}
 	
 	/**

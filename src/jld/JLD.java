@@ -1,6 +1,7 @@
 package jld;
 
-import java.util.HashMap;
+import java.awt.Color;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.ArrayList;
 
@@ -10,9 +11,9 @@ import java.util.ArrayList;
  * Values are stored using the .toString() method of each value
  */
 public class JLD{
-	private HashMap<String, Object> hm = null;
-	public JLD(){super(); hm = new HashMap<String, Object>();}
-	public JLD(HashMap h){super(); hm = h;}
+	private LinkedHashMap<String, Object> hm = null;
+	public JLD(){hm = new LinkedHashMap<String, Object>();}
+	public JLD(LinkedHashMap h){hm = h;}
 	
 	public Object get(String raw){
 		return hm.get(raw);
@@ -24,6 +25,30 @@ public class JLD{
 		return hm.toString();
 	}public Set<String> keySet(){
 		return hm.keySet();
+	}
+	
+	public static Color getAsColor(ArrayList<String> arr, Color defaultTo){
+		if(arr == null)
+			return defaultTo;
+		int[] rgba = new int[4];
+		for(int i=0; i<4; i++){
+			rgba[i] = Integer.parseInt(arr.get(i));
+		}
+		return new Color(rgba[0], rgba[1], rgba[2], rgba[3]);
+	}
+	
+	public static double getAsDouble(String input, double defaultTo){
+		double out = defaultTo;
+		if(input != null)
+			out = Double.parseDouble(input);
+		return out;
+	}
+	
+	public static int getAsInt(String input, int defaultTo){
+		int out = defaultTo;
+		if(input != null)
+			out = Integer.parseInt(input);
+		return out;
 	}
 	
 	/**
@@ -42,7 +67,7 @@ public class JLD{
 			if(raw.charAt(i) == '.' || raw.charAt(i) == ':' || i+2>raw.length()){ //key
 				if(i+2>raw.length())
 					st += raw.charAt(i);
-				ot = ((HashMap)ot).get(st);
+				ot = ((LinkedHashMap)ot).get(st);
 				break;
 			}else{
 				st += raw.charAt(i);
@@ -54,7 +79,7 @@ public class JLD{
 				if(i+2>raw.length())
 					st += raw.charAt(i);
 				if(isKey){
-					ot = ((HashMap)ot).get(st);
+					ot = ((LinkedHashMap)ot).get(st);
 					st = "";
 				}else{
 					ot = ((ArrayList)ot).get(Integer.parseInt(st));

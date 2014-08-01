@@ -25,7 +25,7 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 	private CGroupNode masterNode;
 	private ArrayList<CButton> buttons;
 	private ArrayList<CTextBox> textboxes;
-	ExampleLogic logic;
+	GUILogic logic;
 	
 	public GUIcanvas(){
 		this.setPreferredSize(new Dimension(APPWIDTH, APPHEIGHT));
@@ -43,6 +43,7 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 	 */
 	public void reset(){
 		masterNode = new CGroupNode(MASTERNODE_DESC);
+		masterNode.parent = null;
 		buttons = new ArrayList<CButton>();
 		textboxes = new ArrayList<CTextBox>();
 	}
@@ -57,7 +58,12 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 	 * They are tracked independently to make the UI more responsive
 	 * (a small array traversal is faster than a large tree traversal)
 	 */
-	public void registerControls(CGroupNode root){
+	public void refreshControls(){
+		buttons.clear();
+		textboxes.clear();
+		registerControls(getMasterNode());
+	}
+	private void registerControls(CGroupNode root){
 		for(ACItem node : root.getChildrenCopy()){
 			if(node instanceof CButton){
 				buttons.add((CButton) node);
@@ -86,8 +92,8 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 	/**
 	 * Should never be called directly
 	 */
-	public void paint(Graphics g){
-		super.paint(g);
+	public void paintComponent(Graphics g){
+		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, graphicsQuality);
@@ -109,16 +115,14 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 	 */
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		//System.out.println(this.retrieveButton(new CTargetAgent("","testgrid",GROUP)).x0);
-		//System.out.println(this.retrieveButton(new  CTargetAgent("","testgrid",GROUP)).opacity);
 		for(CButton btn : buttons){
-			if(btn.isEnabled() && e.getX()>btn.x0 && e.getX()<btn.x1 && e.getY()>btn.y0 && e.getY()<btn.y1){
+			if(btn.isEnabled() && isBetween(btn.getX(), e.getX(), btn.x1) && isBetween(btn.getY(), e.getY(), btn.y1)){
 				btn.showHover = true;
 			}else
 				btn.showHover = false;
 		}for(CTextBox txt : textboxes){
 			if(txt.isEnabled() && ((txt.hasFocus()) || 
-									(e.getX()>txt.x0 && e.getX()<txt.x1 && e.getY()>txt.y0 && e.getY()<txt.y1))){
+									(isBetween(txt.getX(), e.getX(), txt.x1) && isBetween(txt.getY(), e.getY(), txt.y1)))){
 				txt.showHover = true;
 			}else{
 				txt.showHover = false;
@@ -129,15 +133,15 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		boolean actionSent = false;
-		for(CButton btn : buttons){
-			if(btn.isEnabled() && e.getX()>btn.x0 && e.getX()<btn.x1 && e.getY()>btn.y0 && e.getY()<btn.y1){
+		for(CButton btn : new ArrayList<CButton>(buttons)){ //prevent concurrent modification exception
+			if(btn.isEnabled() && isBetween(btn.getX(), e.getX(), btn.x1) && isBetween(btn.getY(), e.getY(), btn.y1)){
 				logic.clickEvent(e, btn.actionCommand);
 				actionSent = true;
 				focusedTextBox = null;
 			}
 		}
-		for(CTextBox txt : textboxes){
-			if(txt.isEnabled() && (e.getX()>txt.x0 && e.getX()<txt.x1 && e.getY()>txt.y0 && e.getY()<txt.y1)){
+		for(CTextBox txt : new ArrayList<CTextBox>(textboxes)){
+			if(txt.isEnabled() && isBetween(txt.getX(), e.getX(), txt.x1) && isBetween(txt.getY(), e.getY(), txt.y1)){
 				txt.setFocus(true);
 				logic.clickEvent(e, txt.actionCommand);
 				actionSent = true;
@@ -159,7 +163,7 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 	@Override
 	public void mousePressed(MouseEvent e) {
 		for(CButton btn : buttons){
-			if(btn.isEnabled() && e.getX()>btn.x0 && e.getX()<btn.x1 && e.getY()>btn.y0 && e.getY()<btn.y1)
+			if(btn.isEnabled() && e.getX()>btn.getX() && e.getX()<btn.x1 && e.getY()>btn.getY() && e.getY()<btn.y1)
 				btn.showClicked = true;
 		}
 	}
@@ -182,5 +186,9 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 		if(focusedTextBox != null){
 			focusedTextBox.keyEvent(e);
 		}
+	}
+	
+	private boolean isBetween(double a, double val, double b){
+		return (a < val && val < b) || (a > val && val > b);
 	}
 }

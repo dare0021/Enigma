@@ -4,15 +4,17 @@ import java.awt.Color;
 import java.awt.Font;
 
 public class CTextDef {
-	public double x, y, opacity, depth;
+	public double x, y, opacity, depth, strokeThickness;
 	public String text;
-	public Color color;
+	public Color fillColor, strokeColor;
 	public Font font;
 	
-	public CTextDef(String msg, double x0, double y0, Color fillColor, Font fnt, double o, double z){
+	public CTextDef(String msg, double x0, double y0, Color fill, Color stroke, double thickness, Font fnt, double o, double z){
 		x = x0;
 		y = y0;
-		color = fillColor;
+		fillColor = fill;
+		strokeColor = stroke;
+		strokeThickness = thickness;
 		font = fnt;
 		text = msg;
 		opacity = o;

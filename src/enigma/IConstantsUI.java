@@ -9,7 +9,9 @@ public interface IConstantsUI {
 	public final int APPHEIGHT = 450; //16:9
 	public final int REFRESHRATE = 17; //~60Hz
 	public final double OPACITY_THRESHOLD = 0.0001;
-	public final double DEPTH_INCREMENT = 0.0001;
+	public final double DEPTH_THRESHOLD = 0.0001;
+	public final double DEPTH_INCREMENT = 0.001;
+	public final double DIALOG_FRAME_HEIGHT = 5;
 	
 	///////////////////////////////////////////////////////////////////////////////
 	//Enum substitutes

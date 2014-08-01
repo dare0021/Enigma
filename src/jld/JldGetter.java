@@ -8,9 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.ArrayList;
 
 import javax.management.BadStringOperationException;
@@ -144,13 +143,13 @@ public class JldGetter implements IJLDGlobalFinals {
 //		return f;
 //	}
 	
-	private HashMap parseDoc(String raw){
-		HashMap<String, Object> out = null; 
+	private LinkedHashMap parseDoc(String raw){
+		LinkedHashMap<String, Object> out = null; 
 		try{
 			if(raw.charAt(0) == '{'){ //document
 				boolean nextIsVal = false;
 				String key = null;
-				out = new HashMap<String, Object>();
+				out = new LinkedHashMap<String, Object>();
 				for(raw=raw.substring(1).trim(); true; raw=raw.trim()){
 					if(raw.charAt(0) == ':'){ //new value
 						raw = raw.substring(1).trim();

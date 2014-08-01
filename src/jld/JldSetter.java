@@ -7,11 +7,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URISyntaxException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.ArrayList;
 
 /**
- * Saves a HashMap as a JLD file
+ * Saves a LinkedHashMap as a JLD file
  */
 public class JldSetter implements IJLDGlobalFinals {
 	private final int spacePerTab = 3;
@@ -54,9 +54,9 @@ public class JldSetter implements IJLDGlobalFinals {
 			if(val instanceof ArrayList){
 				st += parseArrayList((ArrayList)val, layer+1);
 				st += ",";
-			}else if(val instanceof HashMap){
+			}else if(val instanceof LinkedHashMap){
 				out.add(st);
-				JLD jldt = new JLD((HashMap)val);
+				JLD jldt = new JLD((LinkedHashMap)val);
 				ArrayList<String> nested = parseMap(jldt, layer+1);
 				st = "";
 				for(String s : nested){
@@ -91,13 +91,13 @@ public class JldSetter implements IJLDGlobalFinals {
 				else
 					first = false;
 				out += parseArrayList((ArrayList)val, layer+1);
-			}else if(val instanceof HashMap){
+			}else if(val instanceof LinkedHashMap){
 				if(!first)
 					out += ",";
 				else
 					first = false;
 				out += "\r\n";
-				JLD jldt = new JLD((HashMap)val);
+				JLD jldt = new JLD((LinkedHashMap)val);
 				ArrayList<String> nested = parseMap(jldt, layer+1);
 				for(String s : nested){
 					out += s;
