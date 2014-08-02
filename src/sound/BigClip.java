@@ -1,16 +1,15 @@
 package sound;
 
 import java.awt.Component;
-import javax.swing.*;
 
+import javax.swing.*;
 // J2SE 1.3
 import javax.sound.sampled.*;
 
 import java.io.*;
-
+import java.net.URI;
 // J2SE 1.4
 import java.util.logging.*;
-
 import java.util.Arrays;
 
 /**THIS IS AN EDITED VERSION 
@@ -91,10 +90,10 @@ public class BigClip implements Clip, LineListener {
     }
     
     public BigClip(String url){
-		File f = null;
+		InputStream f = null;
 		String errprompt = url;
 		try {
-			f = new File(getClass().getResource("/enigma/sounds/"+url).toURI());
+			f = Thread.currentThread().getContextClassLoader().getResourceAsStream(url);
 		}catch (Exception e){
 			e.printStackTrace();
 			System.out.println("No such file: "+errprompt);

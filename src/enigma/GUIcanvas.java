@@ -132,25 +132,25 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		boolean actionSent = false;
-		for(CButton btn : new ArrayList<CButton>(buttons)){ //prevent concurrent modification exception
+		ArrayList<String> actionCommands = new ArrayList<String>();
+		for(CButton btn : buttons){ //prevent concurrent modification exception
 			if(btn.isEnabled() && isBetween(btn.getX(), e.getX(), btn.x1) && isBetween(btn.getY(), e.getY(), btn.y1)){
-				logic.clickEvent(e, btn.actionCommand);
-				actionSent = true;
+				actionCommands.add(btn.actionCommand);
 				focusedTextBox = null;
 			}
 		}
-		for(CTextBox txt : new ArrayList<CTextBox>(textboxes)){
+		for(CTextBox txt : textboxes){
 			if(txt.isEnabled() && isBetween(txt.getX(), e.getX(), txt.x1) && isBetween(txt.getY(), e.getY(), txt.y1)){
 				txt.setFocus(true);
-				logic.clickEvent(e, txt.actionCommand);
-				actionSent = true;
+				actionCommands.add(txt.actionCommand);
 				focusedTextBox = txt;
 			}else{
 				txt.setFocus(false);
 			}
 		}
-		if(!actionSent){
+		for(String cmd : actionCommands)
+			logic.clickEvent(e, cmd);
+		if(!(actionCommands.size() > 0)){
 			focusedTextBox = null;
 			logic.clickEvent(e, null);
 		}

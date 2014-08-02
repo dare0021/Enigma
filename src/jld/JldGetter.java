@@ -39,16 +39,34 @@ public class JldGetter implements IJLDGlobalFinals {
 	*	Use getValues(File) to not use default path
 	*/
 	public JLD getValues(String filepath){
-		return finalize(processStream(getClass().getResourceAsStream(default_dir+filepath)));
+		return finalize(processStream(Thread.currentThread().getContextClassLoader().getResourceAsStream(default_dir+filepath)));
 	}public JLD getValues(File file){
 		return finalize(processStream(getFromFile(file)));
 	}
 	public JLD finalize(ArrayList<String> raw){
-		raw = stripper(raw);
+		raw = commentStripper(raw);
+		raw = macroStripper(raw, getMacros(raw));
 		String input = "";
 		for(String s : raw)
 			input += s;
 		return new JLD(parseDoc(input));
+	}
+	
+	private LinkedHashMap<String, String> getMacros(ArrayList<String> raw){
+		LinkedHashMap<String, String> out = new LinkedHashMap<String, String>();
+		for(String str : raw){
+			str = str.trim();
+			if(str.startsWith("{"))
+				return out;
+			if(str.startsWith("#define ")){
+				str = str.replaceFirst("#define\\s", "");
+				String key = str.substring(0, str.indexOf(' '));
+				String val = str.replaceFirst(key+" ", "");
+				out.put(key, val);
+			}
+		}
+		System.out.println("ERR: No document found");
+		return null;
 	}
 	
 	/**
@@ -104,6 +122,9 @@ public class JldGetter implements IJLDGlobalFinals {
 		}catch(IOException e){
 			System.out.println("ERR: download failure "+e);
 			return null;
+		}catch(NullPointerException e){
+			System.out.println("ERR: cannot access file");
+			return null;
 		}
 	}
 	
@@ -155,12 +176,10 @@ public class JldGetter implements IJLDGlobalFinals {
 						raw = raw.substring(1).trim();
 						if(nextIsVal){
 							Object val = null;
-							if(raw.charAt(0) == '"'){ //new single item value
-								val = stringBetween(raw, '"');
-								raw = stringAfter(raw, '"');
-							}else if(raw.charAt(0) == '\''){ //new single item value in single quotes
-								val = stringBetween(raw, '\'');
-								raw = stringAfter(raw, '\'');
+							if(raw.charAt(0) == '"' || raw.charAt(0) == '\''){
+								String[] arr = parseString(raw);
+								val = arr[0];
+								raw = arr[1];
 							}else if(raw.charAt(0) == '['){ //new list value
 								val = parseList(stringBetween(raw, '[', ']'));
 								raw = stringAfter(raw, '[', ']');
@@ -176,20 +195,11 @@ public class JldGetter implements IJLDGlobalFinals {
 						}else{
 							throw new BadStringOperationException("Malformed JLD: parser expected a value after :");
 						}
-					}else if(raw.charAt(0) == '"'){
+					}else if(raw.charAt(0) == '"' || raw.charAt(0) == '\''){
 						if(!nextIsVal){ //new key
-							key = stringBetween(raw, '"');
-							raw = raw.substring(1);
-							raw = raw.substring(raw.indexOf('"')+1);
-							nextIsVal = true;
-						}else{
-							throw new BadStringOperationException("Malformed JLD: parser expected a key");
-						}
-					}else if(raw.charAt(0) == '\''){
-						if(!nextIsVal){ //new key in single quotes
-							key = stringBetween(raw, '\'');
-							raw = raw.substring(1);
-							raw = raw.substring(raw.indexOf('\'')+1);
+							String[] arr = parseString(raw);
+							key = arr[0];
+							raw = arr[1];
 							nextIsVal = true;
 						}else{
 							throw new BadStringOperationException("Malformed JLD: parser expected a key");
@@ -223,12 +233,10 @@ public class JldGetter implements IJLDGlobalFinals {
 		String orig = raw;
 		ArrayList<Object> out = new ArrayList<Object>();
 		while(raw.indexOf('"')>=0){
-			if(raw.charAt(0) == '"'){
-				out.add(stringBetween(raw, '"'));
-				raw = stringAfter(raw, '"');
-			}else if(raw.charAt(0) == '\''){
-				out.add(stringBetween(raw, '\''));
-				raw = stringAfter(raw, '\'');
+			if(raw.charAt(0) == '"' || raw.charAt(0) == '\''){
+				String[] arr = parseString(raw);
+				out.add(arr[0]);
+				raw = arr[1];
 			}else if(raw.charAt(0) == '['){
 				out.add(parseList(stringBetween(raw, '[', ']')));
 				raw = stringAfter(raw, '[', ']');
@@ -244,11 +252,72 @@ public class JldGetter implements IJLDGlobalFinals {
 	}
 	
 	/**
+	 * Returns an array where [parsedString, raw]
+	 */
+	private String[] parseString(String raw) throws IndexOutOfBoundsException{
+		String out = "";
+		raw = raw.trim();
+		if(raw.charAt(0) == '"'){
+			out += stringBetween(raw, '"');
+			raw = stringAfter(raw, '"').trim();
+		}else if(raw.charAt(0) == '\''){
+			out += stringBetween(raw, '\'');
+			raw = stringAfter(raw, '\'');
+		}else{
+			return new String[]{"",raw};
+		}
+		if(!raw.isEmpty() && raw.charAt(0) == '+'){
+			String[] tmp = parseString(raw.substring(1).trim());
+			out += tmp[0];
+			raw = tmp[1];
+		}
+		return new String[]{out, raw};
+	}
+	
+	/**
+	 * returns a populated document
+	 */
+	private ArrayList<String> macroStripper(ArrayList<String> in, LinkedHashMap<String, String> macros){
+		ArrayList<String> out = new ArrayList<String>();
+		for(String str : in){
+			if(str.trim().startsWith("#define "))
+				continue;
+			boolean nohit = true;
+			String res = "";
+			for(String key : macros.keySet()){
+				if(!str.contains(key)){
+					continue;
+				}
+				boolean foundAtStart = str.trim().startsWith(key);
+				String[] arr = str.split(key);
+				for(int i=0; i<arr.length; i++){
+					arr[i] = arr[i].trim();
+				}
+				String tmpstr = "";
+				if(foundAtStart && tmpstr.isEmpty() && arr[1].substring(0, 1).matches("[\\[\\]:,\\+{}]")){
+					tmpstr += macros.get(key); nohit = false;}
+				tmpstr += arr[0];
+				for(int i=1; i<arr.length; i++){
+					if(!arr[i-1].isEmpty() && arr[i-1].substring(arr[i-1].length()-1).matches("[\\[\\]:,\\+{}]")
+							&& arr[i].substring(0, 1).matches("[\\[\\]:,\\+{}]")){
+						tmpstr += macros.get(key); nohit = false;}
+					tmpstr += arr[i];
+				}
+				res = str = tmpstr;
+			}
+			if(nohit)
+				res = str;
+			out.add(res);
+		}
+		return out;
+	}
+	
+	/**
 	 * Strips comments such as // and /*
 	 * Used only by JLD offline documents
 	 * Actual JSON strings do not contain comments...or lines
 	 */
-	private ArrayList<String> stripper(ArrayList<String> in){
+	private ArrayList<String> commentStripper(ArrayList<String> in){
 		ArrayList<String> out = new ArrayList<String>();
 		boolean blockquote = false;
 		for(String s : in){

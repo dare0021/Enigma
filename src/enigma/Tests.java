@@ -114,8 +114,8 @@ public class Tests implements IConstantsUI {
 			
 			CGroupNode group = new CGroupNode("testgrid");
 			group.addChildren(items);
-			parent.gui.refreshControls();;
 			parent.gui.getMasterNode().addChild(group);
+			parent.gui.refreshControls();
 			return null;
 		}
 		
@@ -363,7 +363,7 @@ public class Tests implements IConstantsUI {
 			if(!ran)
 				return;
 			if(actionCommand != null){
-				if(actionCommand.matches("[0123456789]"+time)){
+				if(actionCommand.matches("[0-9]"+time)){
 					cds.stepSelect(Integer.parseInt(actionCommand.substring(0, 1))-1);
 					refresh();
 				}
@@ -414,7 +414,12 @@ public class Tests implements IConstantsUI {
 		}
 
 		@Override
-		public void clickEvent(MouseEvent e, String actionCommand) {player.stepNext();}
+		public void clickEvent(MouseEvent e, String actionCommand) {
+			if(actionCommand != null)
+				player.clickButton(actionCommand);
+			else
+				player.stepNext();
+		}
 
 		@Override
 		public void dragEvent(MouseEvent e) {}

@@ -8,6 +8,7 @@ public class CText extends ACItem{
 	public String text;
 	public Color fillColor, strokeColor;
 	public Font font;
+	public double lineSeparation;
 	
 	public CText(CTextDef def, String name){
 		super(name);
@@ -26,6 +27,7 @@ public class CText extends ACItem{
 		strokeColor = stroke;
 		strokeThickness = thickness;
 		font = fnt;
+		lineSeparation = font.getSize()*1.1;
 	}
 	
 	public Color getEffectiveFill(double groupOpacity) {return new Color(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), (int)(fillColor.getAlpha()*getOpacity()*groupOpacity));}

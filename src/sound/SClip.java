@@ -1,6 +1,7 @@
 package sound;
 
 import java.io.File;
+import java.io.InputStream;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -21,10 +22,10 @@ public class SClip {
 	}
 	
 	protected void setFile(String url){
-		File f = null;
+		InputStream f = null;
 		String errprompt = url;
 		try {
-			f = new File(getClass().getResource("/enigma/sounds/"+url).toURI());
+			f = Thread.currentThread().getContextClassLoader().getResourceAsStream(url);
 		}catch (Exception e){
 			e.printStackTrace();
 			System.out.println("No such file: "+errprompt);

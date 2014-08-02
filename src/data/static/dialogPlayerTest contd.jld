@@ -1,0 +1,19 @@
+{
+	"name" 	: "DialogTestSeq contd",
+	"bg"	: "Dialog Test/bg.png",
+	"frame"	: "Dialog Test/dialog.png",
+	"font"	: "맑은 고딕",
+	"size"	: "20",
+	"style"	: "1",
+	"boxes" : 	[{
+					"charName"		 : "boy♂",
+					"content"		 : ";ㅂ;",
+					"charHeight"	 : "-100",
+					"contentOffsetX" : "10",
+					"contentOffsetY" : "230",
+					"charNameOffsetX": "10",
+					"charNameOffsetY": "210",
+					"character"		 : "Dialog Test/boySmallCrying.png",
+					"prevSeq"		 : "static/dialogPlayerTest.jld"
+				}]
+}

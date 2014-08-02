@@ -13,7 +13,7 @@ public class CDialogBox extends CGroupNode {
 	private CDialogBox prev, next;
 	protected CStaticImage bg, frame;
 	private CStaticImage character;
-	private String content, characterName;
+	private String content, characterName, prevSeq, nextSeq;
 	/** Additional height beneath the image */
 	private double characterHeight, frameHeight;
 	/** Relative offset off of frame's coords */
@@ -23,19 +23,21 @@ public class CDialogBox extends CGroupNode {
 		super(_name);
 		parent = _parent;
 		prev = next = null;
+		prevSeq = nextSeq = null;
 		bg = frame = character = null;
 		content = characterName = _name + " is not initialized";
 		charNameOffsetX = charNameOffsetY = contentOffsetX = contentOffsetY = characterHeight = 0;
 		frameHeight = DIALOG_FRAME_HEIGHT;
 	}
 	/** 
-	  * Creates a copy of the CDialogBox with the exception of prev and next.
+	  * Creates a copy of the CDialogBox with the exception of prev(Seq) and next(Seq) relations.
 	  * Note: This is not a deep copy.
 	  */
 	public CDialogBox(String _name, CDialogSeq _parent, CDialogBox orig) {
 		super(_name);
 		parent = _parent;
 		prev = next = null;
+		prevSeq = nextSeq = null;
 		bg = orig.bg;
 		frame = orig.frame;
 		character = orig.getCharacterImage();
@@ -125,5 +127,19 @@ public class CDialogBox extends CGroupNode {
 		contentOffsetY = coy;
 	}public double getContentOffsetY(){
 		return contentOffsetY;
+	}
+
+	/** input is in file location */
+	public void setPrevSeq(String _prev){
+		prevSeq = _prev;
+	}/** return is in file location */
+	public String getPrevSeq(){
+		return prevSeq;
+	}/** input is in file location */
+	public void setNextSeq(String _next){
+		nextSeq = _next;
+	}/** return is in file location */
+	public String getNextSeq(){
+		return nextSeq;
 	}
 }

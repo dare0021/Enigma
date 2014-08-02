@@ -51,29 +51,15 @@ public class CStaticImage extends ACItem{
 	}
 	
 	protected void setFile(String url){
-		File f = null;
-		String errprompt = url;
-		try {
-			f = new File(getClass().getResource("/images/"+url).toURI());
-			
-			address = url;
-		}catch (Exception e){
+		try{
+			image = ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream(url));
+		}catch(Exception e){
 			e.printStackTrace();
 			try {
-				f = new File(getClass().getResource("/images/dummy.png").toURI());
-				address = null;
-				System.out.println("No such file: "+errprompt);
-				System.out.println("ERR handled by inserting dummy image");
-			} catch (URISyntaxException e1) {
+				image = ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("dummy.png"));
+			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-		}
-		
-		try {
-			image = ImageIO.read(f);
-		} catch (IOException e) {
-			System.out.println("Can't create stream for: "+errprompt);
-			e.printStackTrace();
 		}
 	}
 	

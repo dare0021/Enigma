@@ -16,7 +16,9 @@ public class ExampleLogic extends GUILogic implements IConstantsUI{
 	}
 	
 	private void test(){
-		test = new Tests.dialogRenderTest(this);
+		//test = new Tests.gridTest(this);
+		test = new Tests.dialogPlayerTest(this);
+		//test = new Tests.soundTest();
 		test.run();
 	}
 

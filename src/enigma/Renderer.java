@@ -59,21 +59,30 @@ public class Renderer implements IConstantsUI{
 	
 	private void paintText(CText label){
 		g2d.setFont(label.font);
+		int i=0;
+		for(String str : label.text.substring(label.offset, label.len).split("\n")){
+			paintLineOfText(label, str, label.lineSeparation*i);
+			i++;
+		}
+	}
+	
+	private void paintLineOfText(CText label, String text, double yoffset){
+		int y = (int)(label.getY()+yoffset);
 		if(label.strokeThickness > 0){
 			g2d.setColor(label.getEffectiveStroke(groupOpacity));
 			for(int i=0; i<label.strokeThickness; i++){
-				g2d.drawChars(label.text.toCharArray(), label.offset, label.len, (int)label.getX()+i, (int)label.getY());
-				g2d.drawChars(label.text.toCharArray(), label.offset, label.len, (int)label.getX(), (int)label.getY()+i);
-				g2d.drawChars(label.text.toCharArray(), label.offset, label.len, (int)label.getX()-i, (int)label.getY());
-				g2d.drawChars(label.text.toCharArray(), label.offset, label.len, (int)label.getX(), (int)label.getY()-i);
-				g2d.drawChars(label.text.toCharArray(), label.offset, label.len, (int)label.getX()+i, (int)label.getY()+i);
-				g2d.drawChars(label.text.toCharArray(), label.offset, label.len, (int)label.getX()+i, (int)label.getY()-i);
-				g2d.drawChars(label.text.toCharArray(), label.offset, label.len, (int)label.getX()-i, (int)label.getY()-i);
-				g2d.drawChars(label.text.toCharArray(), label.offset, label.len, (int)label.getX()-i, (int)label.getY()+i);
+				g2d.drawString(text, (int)label.getX()+i, y);
+				g2d.drawString(text, (int)label.getX(), y+i);
+				g2d.drawString(text, (int)label.getX()-i, y);
+				g2d.drawString(text, (int)label.getX(), y-i);
+				g2d.drawString(text, (int)label.getX()+i, y+i);
+				g2d.drawString(text, (int)label.getX()+i, y-i);
+				g2d.drawString(text, (int)label.getX()-i, y-i);
+				g2d.drawString(text, (int)label.getX()-i, y+i);
 			}
 		}
 		g2d.setColor(label.getEffectiveFill(groupOpacity));
-		g2d.drawChars(label.text.toCharArray(), label.offset, label.len, (int)label.getX(), (int)label.getY());
+		g2d.drawString(text, (int)label.getX(), y);
 	}
 	
 	private void paintShape(ACShape shape){

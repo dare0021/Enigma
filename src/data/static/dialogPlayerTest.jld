@@ -1,26 +1,76 @@
-{
-	"name" 	: "DialogTestSeq",
-	"bg"	: "Dialog Test/bg.png",
-	"frame"	: "Dialog Test/dialog.png",
+#define DIR "Dialog Test/"
+#define NOM "name"
+{//should be the same as the content in dialogRenderTest - ish
+	NOM 	: "DialogTestSeq",
+	"bg"	: DIR + "bg.png",
+	"frame"	: DIR + "dialog.png",
 	"font"	: "맑은 고딕",
 	"size"	: "20",
 	"style"	: "1",
-	"fill"	: ["255", "255", "255", "255"],
-	"stroke": ["0", "0", "0", "255"],
-	"thickness" : "2",
 	"boxes" : 	[{
-				"charName"		 : "boy♂",
-				"content"		 : "누구세요?",
-				"charHeight"	 : "-100",
-				"contentOffsetX" : "10",
-				"contentOffsetY" : "230",
-				"charNameOffsetX": "10",
-				"charNameOffsetY": "210",
-				"character"		 : "Dialog Test/boySmall.png"
+					"charName"		 : "boy♂",
+					"content"		 : "누구세요?",
+					"charHeight"	 : "-100",
+					"contentOffsetX" : "10",
+					"contentOffsetY" : "230",
+					"charNameOffsetX": "10",
+					"charNameOffsetY": "210",
+					"character"		 : DIR + "boySmall.png"
 				},
 				{
-				"charName"		 : "ヴァン",
-				"content"		 : "촉촉하게 만들어주지!",
-				"character"		 : "Dialog Test/dak.png"
+					"charName"		 : "ヴァン",
+					"content"		 : "촉촉하게 만들어주지!",
+					"character"		 : DIR + "dak.png"
+				},
+				{
+					"name"			 : "dialogPlayerTest opt",
+					"charName"		 : "boy♂",
+					"content"		 : "어쩌지?!",
+					"character"		 : DIR + "boySmall.png",
+					"buttons"		 : [{
+											"bg"	: DIR + "1.png",
+											"hover"	: DIR + "1-hover.png",
+											"click" : DIR + "1-click.png"
+										},
+										{
+											"bg"	: DIR + "2.png",
+											"hover"	: DIR + "2-hover.png",
+											"click" : DIR + "2-click.png"
+										},
+										{
+											"bg"	: DIR + "3.png",
+											"hover"	: DIR + "3-hover.png",
+											"click" : DIR + "3-click.png"
+										}],
+					"results"		 : ["dialogPlayerTest res 1",
+										"dialogPlayerTest res 2",
+										"dialogPlayerTest res 3"]
+				},
+				{
+					"name"			 : "dialogPlayerTest res 1",
+					"content"		 : "이상한 변태를 따돌린 듯 하다...\r\n운이 좋았다...",
+					"next"			 : ""
+				},
+				{
+					"name" 			 : "dialogPlayerTest res 2",
+					"charName"		 : "ヴァン",
+					"content"		 : "이런이런~ 소방차는 빨간불에도 멈추지 않아 Boy♂",
+					"character"		 : DIR + "dak.png",
+					"prev"			 : "dialogPlayerTest opt",
+					"next"			 : "dialogPlayerTest end"
+				},
+				{
+					"name"			 : "dialogPlayerTest res 3",
+					"content"		 : "더욱더 매끄럽게!",
+					"prev"			 : "dialogPlayerTest opt",
+					"next"			 : "",
+					"nextSeq"		 : "static/dialogPlayerTest contd.jld"
+				},
+				{
+					"name"			 : "dialogPlayerTest end",
+					"charName"		 : "boy♂",
+					"content"		 : "거...거긴 안돼...",
+					"character"		 : DIR + "boySmallCrying.png",
+					"prev"			 : "dialogPlayerTest res 2"
 				}]
 }

@@ -51,6 +51,32 @@ public class JLD{
 		return out;
 	}
 	
+	public static String parseControlChars(String input){
+		String out = "";
+		for(int i=0; i<input.length(); i++){
+			char c = input.charAt(i);
+			if(c != '\\'){
+				out += c;
+				continue;
+			}//else
+			i++;
+			switch (input.charAt(i)){
+			case 'r':
+				break;
+			case 'n':
+				out += '\n';
+				break;
+			case 't':
+				out += '\t';
+				break;
+			case '\\':
+			default:
+				out += '\\';
+			}
+		}
+		return out;
+	}
+	
 	/**
 	 * Evaluates the given string to extract a map value
 	 * e.g. eval(hm, "e.g") is equal to hm.get("e").get("g")
