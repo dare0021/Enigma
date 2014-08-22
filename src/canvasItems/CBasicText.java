@@ -2,7 +2,7 @@ package canvasItems;
 import java.awt.Color;
 import java.awt.Font;
 
-public class CText extends ACItem{
+public class CBasicText extends ACItem{
 	public int len, offset;
 	public double strokeThickness;
 	public String text;
@@ -10,7 +10,7 @@ public class CText extends ACItem{
 	public Font font;
 	public double lineSeparation;
 	
-	public CText(CTextDef def, String name){
+	public CBasicText(CTextDef def, String name){
 		super(name);
 		init(def.text, def.x, def.y, def.text.length(), 0, def.fillColor, def.strokeColor, def.strokeThickness, def.font);
 		setOpacity(def.opacity);

@@ -23,6 +23,15 @@ public class CButton extends ACItem{
 	
 	public CButton(CButtonDef def, String name, String actionCmd){
 		super(name);
+		init(def, name, actionCmd);
+	}
+	/**Uses the name as the action command*/
+	public CButton(CButtonDef def, String name){
+		super(name);
+		init(def, name, name);
+	}
+	
+	private void init(CButtonDef def, String name, String actionCmd){
 		x0 = def.x;
 		y0 = def.y;
 		if(def.width < 0 && def.height < 0){
@@ -52,15 +61,23 @@ public class CButton extends ACItem{
 			return bgimage;
 	}
 
-	public double getX0() {return x0;}
-	public double getY0() {return y0;}
+	/**Calls getX()**/
+	public double getX0() {return getX();}
+	/**Calls getY()**/
+	public double getY0() {return getY();}
 	public double getWidth() {return x1-x0;}
 	public double getHeight() {return y1-y0;}
 	public double getApparentWidth() {return getImage().image.getWidth();}
 	public double getApparentHeight(){return getImage().image.getHeight();}
 	public boolean isEnabled(){return enabled;}
 	
+	/**bypasses setX()'s auxiliary behaviors
+	 * like setting x1 according to getWidth()
+	 */
 	public void setX0(double x) {x0 = x;}
+	/**bypasses setY()'s auxiliary behaviors
+	 * like setting y1 according to getHeight()
+	 */
 	public void setY0(double y) {y0 = y;}
 	public void setEnabled(boolean e){enabled = e;}
 	

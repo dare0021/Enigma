@@ -63,6 +63,12 @@ class GUIcanvas extends JPanel implements IConstantsUI, IStringsGUI, MouseMotion
 		textboxes.clear();
 		registerControls(getMasterNode());
 	}
+	/**
+	 * Adds controls given
+	 * 
+	 * Does not check if the controls are children of master node
+	 * nor does the function clean previous controls. 
+	 */
 	private void registerControls(CGroupNode root){
 		for(ACItem node : root.getChildrenCopy()){
 			if(node instanceof CButton){

@@ -35,6 +35,12 @@ public class GUILogic implements IConstantsUI, ActionListener, KeyListener{
 		timer = new Timer(REFRESHRATE, this);
 	}
 	
+	public void reset(){
+		animations.clear();
+		fadeanims.clear();
+		timer.stop();
+	}
+	
 	/**
 	 * Moves the item by that much, relative to its current position
 	 * length is time in ms
@@ -214,20 +220,11 @@ public class GUILogic implements IConstantsUI, ActionListener, KeyListener{
 	public void dragEvent(MouseEvent e) {}
 
 	@Override
-	public void keyPressed(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void keyPressed(KeyEvent arg0) {}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void keyReleased(KeyEvent arg0) {}
 
 	@Override
-	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void keyTyped(KeyEvent arg0) {}
 }

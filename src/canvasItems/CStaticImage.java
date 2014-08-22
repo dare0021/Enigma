@@ -1,6 +1,9 @@
 package canvasItems;
 
 /**
+ * Use width&height<0 to automatically get the image
+ * dimensions from the file.
+ * 
  * Opacity only works on files with alpha channels
  * Opacity is from 0 to 1, 1 being fully opaque.
  * 

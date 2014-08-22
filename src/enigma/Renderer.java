@@ -4,6 +4,7 @@ import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.font.TextLayout;
@@ -25,8 +26,8 @@ public class Renderer implements IConstantsUI{
 		ArrayList<CGroupNode> runBeforeExit = new ArrayList<CGroupNode>();
 		groupOpacity = root.getEffectiveOpacity();
 		for (ACItem node : root.getChildrenCopy()){
-			if(node instanceof CText){
-				paintText((CText) node);
+			if(node instanceof CBasicText){
+				paintText((CBasicText) node);
 			}else if(node instanceof ACShape){
 				paintShape((ACShape) node);
 			}else if(node instanceof CJifImage){ //must come before CStaticImage due to inheritance
@@ -57,7 +58,7 @@ public class Renderer implements IConstantsUI{
 		root.removeChild(deleteOnExit);
 	}
 	
-	private void paintText(CText label){
+	private void paintText(CBasicText label){
 		g2d.setFont(label.font);
 		int i=0;
 		for(String str : label.text.substring(label.offset, label.len).split("\n")){
@@ -66,7 +67,7 @@ public class Renderer implements IConstantsUI{
 		}
 	}
 	
-	private void paintLineOfText(CText label, String text, double yoffset){
+	private void paintLineOfText(CBasicText label, String text, double yoffset){
 		int y = (int)(label.getY()+yoffset);
 		if(label.strokeThickness > 0){
 			g2d.setColor(label.getEffectiveStroke(groupOpacity));
@@ -112,9 +113,19 @@ public class Renderer implements IConstantsUI{
 		g2d.drawImage(img.image, (int)img.getX(), (int)img.getY(), (int)(img.getEffectiveX1()), (int)(img.getEffectiveY1()), 0, 0, (int)img.getRawWidth(), (int)img.getRawHeight(), null);
 	}
 	
+	/**
+	 * Also handles text buttons
+	 */
 	private void paintButton(CButton btn){
 		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) (btn.getOpacity()*groupOpacity)));
-		g2d.drawImage(btn.getImage().image, (int)btn.getX(), (int)btn.getY(), null);
+		Image image = btn.getImage().image;
+		if(btn instanceof CTextButton){
+			if(image != null)
+				g2d.drawImage(btn.getImage().image, (int)btn.getX(), (int)btn.getY(), null);
+			paintText(((CTextButton)btn).getTextObject());
+		}else{
+			g2d.drawImage(btn.getImage().image, (int)btn.getX(), (int)btn.getY(), null);
+		}
 	}
 	
 	private void paintTextBox(CTextBox txt){
@@ -204,13 +215,13 @@ public class Renderer implements IConstantsUI{
 		}
 
 		cds.txtdef.text = box.getCharacterName();
-		CText txt = new CText(cds.txtdef, box.getCharacterName());
+		CBasicText txt = new CBasicText(cds.txtdef, box.getCharacterName());
 		txt.moveTo(framedx + box.getCharNameOffsetX(), framedy + box.getCharNameOffsetY());
 		txt.setDepth(z += z_increment);
 		items.add(txt);
 
 		cds.txtdef.text = box.getContent();
-		txt = new CText(cds.txtdef, box.getContent());
+		txt = new CBasicText(cds.txtdef, box.getContent());
 		txt.moveTo(framedx + box.getContentOffsetX(), framedy + box.getContentOffsetY());
 		txt.setDepth(z += z_increment);
 		items.add(txt);
@@ -240,7 +251,7 @@ public class Renderer implements IConstantsUI{
 		for(int i=0; i<cdo.btns.size(); i++){
 			CButton btn = cdo.btns.get(i);
 			btn.setX((screen.width-btn.getApparentWidth())/2 + screen.x);
-			btn.setY((screen.height-cdo.btns.get(cdo.btns.size()-1).getApparentHeight())/cdo.btns.size() * i + screen.y);
+			btn.setY((screen.height-cdo.btns.get(cdo.btns.size()-1).getApparentHeight()-cdo.getOptionHeight())/(cdo.btns.size()-1) * i + screen.y);
 			items.add(btn);
 		}
 		drawGroup.addChildren(items);

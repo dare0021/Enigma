@@ -26,14 +26,14 @@ public class CTextBox extends ACItem implements ActionListener{
 	public CStaticImage bgimage, hoverimage;
 
 	private boolean focus, cursorVisible;
-	private CText field;
+	private CBasicText field;
 	private Timer timer;
 
 	public CTextBox(CTextBoxDef def, String name){
 		super(name);
 		bgimage = def.bgimage;
 		hoverimage = def.hoverimage;
-		field = new CText(new CTextDef("", def.x, def.y, def.textColor, def.textStroke, def.strokeThickness, def.font, def.opacity, def.depth), name+".field");
+		field = new CBasicText(new CTextDef("", def.x, def.y, def.textColor, def.textStroke, def.strokeThickness, def.font, def.opacity, def.depth), name+".field");
 		field.moveForward();
 		setOpacity(def.opacity);
 		setDepth(def.depth);

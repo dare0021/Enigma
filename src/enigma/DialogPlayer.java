@@ -193,6 +193,7 @@ public class DialogPlayer implements IConstantsUI, ActionListener {
 		ArrayList<LinkedHashMap<String, String>> btnarr = (ArrayList<LinkedHashMap<String, String>>) hm.get("buttons"); 
 		if(btnarr != null){
 			box = new CDialogOpt(box.getName(), box.getParent(), box);
+			((CDialogOpt)box).setOptionHeight(JLD.getAsDouble((String) hm.get("optionHeight"), 0));
 			String lastBG = null;
 			for(int j=0; j<btnarr.size(); j++){
 				LinkedHashMap<String, String> btn = btnarr.get(j);

@@ -60,7 +60,7 @@ public abstract class ACItem implements ICItem, Comparable<ACItem>, IConstantsUI
 	public ECItemType getType(){
 		Object comp = this;
 		if(false){ //so it's easy to swap around the other cases
-		}else if(comp instanceof CText){
+		}else if(comp instanceof CBasicText){
 			return ECItemType.TEXT;
 		}else if(comp instanceof CButton){
 			return ECItemType.BUTTON;

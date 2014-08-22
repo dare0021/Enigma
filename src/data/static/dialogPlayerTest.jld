@@ -27,6 +27,7 @@
 					"charName"		 : "boy♂",
 					"content"		 : "어쩌지?!",
 					"character"		 : DIR + "boySmall.png",
+					"optionHeight"	 : "110",
 					"buttons"		 : [{
 											"bg"	: DIR + "1.png",
 											"hover"	: DIR + "1-hover.png",

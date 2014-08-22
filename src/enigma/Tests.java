@@ -26,20 +26,20 @@ public class Tests implements IConstantsUI {
 			ArrayList<ACItem> items = new ArrayList<ACItem>();
 			
 			cf.fillColor = Color.WHITE;
-			cf.font = new Font("Ariel", Font.PLAIN, 12);
+			cf.font = new Font("Verdana", Font.PLAIN, 12);
 			for(int i=0; i<APPWIDTH; i+=50){
 				items.add(new CLine(i, -1*APPHEIGHT, i, APPHEIGHT*2, "GridTestyLine"+i));
 				cf.msg = ""+i;
 				cf.x = i;
 				cf.y = 12;
-				items.add(new CText(cf.createTextDef(), "GridTestyLabel"+i));
+				items.add(new CBasicText(cf.createTextDef(), "GridTestyLabel"+i));
 			}
 			for(int i=0; i<APPHEIGHT; i+=50){
 				items.add(new CLine(-1*APPWIDTH, i, APPWIDTH*2, i, "xAxisLine"+i));
 				cf.msg = ""+i;
 				cf.x = 0;
 				cf.y = i;
-				items.add(new CText(cf.createTextDef(), "GridTestxLabel"+i));
+				items.add(new CBasicText(cf.createTextDef(), "GridTestxLabel"+i));
 			}
 	
 			cf.setSize(300, 100);
@@ -311,6 +311,7 @@ public class Tests implements IConstantsUI {
 				cf.hoverimage = new CStaticImage(cf.createImageDef(), "Opt " + i + " hover");
 				((CDialogOpt)box).btns.add(new CButton(cf.createButtonDef(), "Opt " + i + " button", ""+i+time));
 			}
+			((CDialogOpt)box).setOptionHeight(110);
 			box.setPrev(seq.currentNode);
 			seq.currentNode.setNext(box);
 			seq.stepNext();
