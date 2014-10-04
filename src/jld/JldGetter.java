@@ -230,7 +230,7 @@ public class JldGetter implements IJLDGlobalFinals {
 	 * Example input: "Id","101010100","Name"
 	 */
 	private ArrayList parseList(String raw) throws IndexOutOfBoundsException{
-		String orig = raw;
+		raw = raw.trim();
 		ArrayList<Object> out = new ArrayList<Object>();
 		while(raw.indexOf('"')>=0){
 			if(raw.charAt(0) == '"' || raw.charAt(0) == '\''){
