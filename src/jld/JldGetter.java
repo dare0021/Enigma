@@ -49,6 +49,8 @@ public class JldGetter implements IJLDGlobalFinals {
 		String input = "";
 		for(String s : raw)
 			input += s;
+		if(input.charAt(0) == '\uFEFF') //Remove UTF-16 BOM marker
+			input = input.substring(1);
 		return new JLD(parseDoc(input));
 	}
 	
